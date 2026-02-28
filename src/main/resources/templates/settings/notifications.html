@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Bildirim Ayarları — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="mb-4">
+        <h2><i class="bi bi-gear me-2"></i>Bildirim Ayarları</h2>
+        <p class="text-muted">Bildirim tercihlerinizi buradan yönetebilirsiniz.</p>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <form th:action="@{/settings/notifications}" method="post" class="card" data-disable-on-submit>
+                <div class="card-body">
+
+                    <!-- E-posta Bildirimleri -->
+                    <div class="mb-4">
+                        <h5 class="card-title"><i class="bi bi-envelope me-2"></i>E-posta Bildirimleri</h5>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="emailEnabled"
+                                   name="emailEnabled" th:checked="${settings.emailEnabled}" value="true">
+                            <label class="form-check-label" for="emailEnabled">
+                                E-posta bildirimlerini etkinleştir
+                            </label>
+                            <div class="form-text">Önemli güncellemeler için e-posta alın.</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Push Bildirimleri -->
+                    <div class="mb-4">
+                        <h5 class="card-title"><i class="bi bi-app-indicator me-2"></i>Uygulama İçi Bildirimler</h5>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="pushEnabled"
+                                   name="pushEnabled" th:checked="${settings.pushEnabled}" value="true">
+                            <label class="form-check-label" for="pushEnabled">
+                                Anlık bildirimleri etkinleştir
+                            </label>
+                            <div class="form-text">Gerçek zamanlı bildirimler alın.</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Günlük Hatırlatma -->
+                    <div class="mb-4">
+                        <h5 class="card-title"><i class="bi bi-clock me-2"></i>Günlük Hatırlatma</h5>
+                        <div class="mb-3">
+                            <label for="dailyReminderTime" class="form-label">Hatırlatma Saati</label>
+                            <input type="time" class="form-control" id="dailyReminderTime"
+                                   name="dailyReminderTime"
+                                   th:value="${settings.dailyReminderTime}" style="max-width: 200px;">
+                            <div class="form-text">Her gün bu saatte hatırlatma bildirimi alırsınız.</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Streak Uyarısı -->
+                    <div class="mb-4">
+                        <h5 class="card-title"><i class="bi bi-exclamation-triangle me-2"></i>Streak Uyarısı</h5>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="streakDangerEnabled"
+                                   name="streakDangerEnabled" th:checked="${settings.streakDangerEnabled}" value="true">
+                            <label class="form-check-label" for="streakDangerEnabled">
+                                Streak tehlike uyarılarını etkinleştir
+                            </label>
+                            <div class="form-text">Serinizi kaybetmek üzereyken uyarı alın (saat 22:00).</div>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                    <!-- Haftalık Özet -->
+                    <div class="mb-4">
+                        <h5 class="card-title"><i class="bi bi-bar-chart me-2"></i>Haftalık Özet</h5>
+                        <div class="form-check form-switch mb-3">
+                            <input class="form-check-input" type="checkbox" id="weeklySummaryEnabled"
+                                   name="weeklySummaryEnabled" th:checked="${settings.weeklySummaryEnabled}" value="true">
+                            <label class="form-check-label" for="weeklySummaryEnabled">
+                                Haftalık özet bildirimlerini etkinleştir
+                            </label>
+                            <div class="form-text">Her hafta ilerlemenizin özetini alın.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="weeklySummaryDay" class="form-label">Özet Günü</label>
+                            <select class="form-select" id="weeklySummaryDay" name="weeklySummaryDay"
+                                    style="max-width: 200px;">
+                                <option value="1" th:selected="${settings.weeklySummaryDay == 1}">Pazartesi</option>
+                                <option value="2" th:selected="${settings.weeklySummaryDay == 2}">Salı</option>
+                                <option value="3" th:selected="${settings.weeklySummaryDay == 3}">Çarşamba</option>
+                                <option value="4" th:selected="${settings.weeklySummaryDay == 4}">Perşembe</option>
+                                <option value="5" th:selected="${settings.weeklySummaryDay == 5}">Cuma</option>
+                                <option value="6" th:selected="${settings.weeklySummaryDay == 6}">Cumartesi</option>
+                                <option value="7" th:selected="${settings.weeklySummaryDay == 7}">Pazar</option>
+                            </select>
+                            <div class="form-text">Haftalık özetin gönderileceği gün.</div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-footer text-end">
+                    <a th:href="@{/notifications}" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-arrow-left me-1"></i>Geri
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>Kaydet
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+

@@ -26,7 +26,7 @@
                         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
 
-                    <form th:action="@{/auth/register}" th:object="${registerForm}" method="post" novalidate>
+                    <form th:action="@{/auth/register}" th:object="${registerForm}" method="post" novalidate data-disable-on-submit>
                         <div class="mb-3">
                             <label for="email" class="form-label">E-posta *</label>
                             <input type="email" th:field="*{email}" id="email" class="form-control"

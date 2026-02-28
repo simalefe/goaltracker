@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -104,6 +105,116 @@ public class GlobalExceptionHandler {
         }
         ModelAndView mav = new ModelAndView("auth/verify-email");
         mav.addObject("errorMessage", ex.getMessage());
+        return mav;
+    }
+
+    // ---- Goal Exceptions ----
+    @ExceptionHandler(GoalNotFoundException.class)
+    public Object handleGoalNotFound(HttpServletRequest req, GoalNotFoundException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(ErrorCode.GOAL_NOT_FOUND.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("error/404");
+        mav.setStatus(HttpStatus.NOT_FOUND);
+        mav.addObject("errorMessage", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(GoalAccessDeniedException.class)
+    public Object handleGoalAccessDenied(HttpServletRequest req, GoalAccessDeniedException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(ApiResponse.error(ErrorCode.GOAL_ACCESS_DENIED.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("error/403");
+        mav.setStatus(HttpStatus.FORBIDDEN);
+        mav.addObject("errorMessage", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(InvalidStatusTransitionException.class)
+    public Object handleInvalidStatusTransition(HttpServletRequest req, InvalidStatusTransitionException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(ErrorCode.INVALID_STATUS_TRANSITION.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/goals");
+        return mav;
+    }
+
+    @ExceptionHandler(GoalLimitExceededException.class)
+    public Object handleGoalLimitExceeded(HttpServletRequest req, GoalLimitExceededException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(ErrorCode.GOAL_LIMIT_EXCEEDED.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/goals");
+        return mav;
+    }
+
+    // ---- GoalEntry Exceptions ----
+    @ExceptionHandler(GoalEntryNotFoundException.class)
+    public Object handleGoalEntryNotFound(HttpServletRequest req, GoalEntryNotFoundException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ApiResponse.error(ErrorCode.GOAL_ENTRY_NOT_FOUND.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("error/404");
+        mav.setStatus(HttpStatus.NOT_FOUND);
+        mav.addObject("errorMessage", ex.getMessage());
+        return mav;
+    }
+
+    @ExceptionHandler(DuplicateEntryException.class)
+    public Object handleDuplicateEntry(HttpServletRequest req, DuplicateEntryException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiResponse.error(ErrorCode.DUPLICATE_ENTRY.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/goals");
+        return mav;
+    }
+
+    @ExceptionHandler(EntryOutOfRangeException.class)
+    public Object handleEntryOutOfRange(HttpServletRequest req, EntryOutOfRangeException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(ErrorCode.ENTRY_OUT_OF_RANGE.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/goals");
+        return mav;
+    }
+
+    @ExceptionHandler(GoalNotActiveException.class)
+    public Object handleGoalNotActive(HttpServletRequest req, GoalNotActiveException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ApiResponse.error(ErrorCode.GOAL_NOT_ACTIVE.name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/goals");
+        return mav;
+    }
+
+    @ExceptionHandler(ObjectOptimisticLockingFailureException.class)
+    public Object handleOptimisticLocking(HttpServletRequest req, ObjectOptimisticLockingFailureException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(ApiResponse.error(ErrorCode.CONCURRENT_UPDATE_CONFLICT.name(),
+                            ErrorCode.CONCURRENT_UPDATE_CONFLICT.getDefaultMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/goals");
+        return mav;
+    }
+
+    // ---- Social / Friendship Exceptions ----
+    @ExceptionHandler(FriendshipException.class)
+    public Object handleFriendshipException(HttpServletRequest req, FriendshipException ex) {
+        if (isApiRequest(req)) {
+            return ResponseEntity.status(ex.getErrorCode().getHttpStatus())
+                    .body(ApiResponse.error(ex.getErrorCode().name(), ex.getMessage()));
+        }
+        ModelAndView mav = new ModelAndView("redirect:/social");
         return mav;
     }
 

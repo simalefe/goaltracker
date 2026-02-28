@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Kullanıcı Ara — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-search me-2"></i>Kullanıcı Ara</h1>
+    </div>
+
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/social/search}" method="get" class="row g-2 align-items-end">
+                <div class="col-auto flex-grow-1">
+                    <label for="searchQuery" class="form-label">Kullanıcı Adı</label>
+                    <input type="text" class="form-control" id="searchQuery" name="query"
+                           placeholder="Aramak istediğiniz kullanıcı adını girin..." required>
+                </div>
+                <div class="col-auto">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search me-1"></i>Ara
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Search Results -->
+    <div class="card" th:if="${searchResults != null}">
+        <div class="card-header">
+            <i class="bi bi-people me-2"></i>Arama Sonuçları
+        </div>
+        <div class="list-group list-group-flush" th:if="${!searchResults.isEmpty()}">
+            <div th:each="user : ${searchResults}" class="list-group-item d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center">
+                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                         style="width: 40px; height: 40px;">
+                        <i class="bi bi-person-fill" th:if="${user.avatarUrl() == null}"></i>
+                        <img th:if="${user.avatarUrl() != null}" th:src="${user.avatarUrl()}"
+                             class="rounded-circle" style="width: 40px; height: 40px;" alt="Avatar">
+                    </div>
+                    <div>
+                        <strong th:text="${user.displayName() != null ? user.displayName() : user.username()}"></strong>
+                        <span class="text-muted ms-1" th:text="'@' + ${user.username()}"></span>
+                    </div>
+                </div>
+                <form th:action="@{/social/friends/request}" method="post">
+                    <input type="hidden" name="receiverUsername" th:value="${user.username()}">
+                    <button type="submit" class="btn btn-sm btn-outline-primary">
+                        <i class="bi bi-person-plus me-1"></i>Arkadaş Ekle
+                    </button>
+                </form>
+            </div>
+        </div>
+        <div class="card-body text-center text-muted" th:if="${searchResults.isEmpty()}">
+            <i class="bi bi-search fs-1 d-block mb-2"></i>
+            <p>Kullanıcı bulunamadı.</p>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a th:href="@{/social}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Sosyal Sayfasına Dön
+        </a>
+    </div>
+</main>
+</body>
+</html>
+

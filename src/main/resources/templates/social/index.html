@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Sosyal — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-people me-2"></i>Sosyal</h1>
+    </div>
+
+    <!-- Tab Navigation -->
+    <ul class="nav nav-tabs mb-4" id="socialTabs" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" th:classappend="${activeTab == 'friends' ? 'active' : ''}"
+               th:href="@{/social(tab='friends')}" role="tab">
+                <i class="bi bi-person-plus me-1"></i>Arkadaşlar
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" th:classappend="${activeTab == 'leaderboard' ? 'active' : ''}"
+               th:href="@{/social(tab='leaderboard')}" role="tab">
+                <i class="bi bi-trophy me-1"></i>Liderboard
+            </a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" th:classappend="${activeTab == 'activity' ? 'active' : ''}"
+               th:href="@{/social(tab='activity')}" role="tab">
+                <i class="bi bi-activity me-1"></i>Aktivite Akışı
+            </a>
+        </li>
+    </ul>
+
+    <!-- ==================== FRIENDS TAB ==================== -->
+    <div th:if="${activeTab == 'friends'}">
+        <!-- Send Friend Request -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-person-plus me-2"></i>Arkadaşlık İsteği Gönder
+            </div>
+            <div class="card-body">
+                <form th:action="@{/social/friends/request}" method="post" class="row g-2 align-items-end">
+                    <div class="col-auto flex-grow-1">
+                        <label for="receiverUsername" class="form-label">Kullanıcı Adı</label>
+                        <input type="text" class="form-control" id="receiverUsername"
+                               name="receiverUsername" placeholder="Kullanıcı adını girin..." required>
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-1"></i>Gönder
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Pending Incoming Requests -->
+        <div class="card mb-4" th:if="${pendingIncoming != null and !pendingIncoming.isEmpty()}">
+            <div class="card-header bg-warning text-dark">
+                <i class="bi bi-inbox me-2"></i>Gelen İstekler
+                <span class="badge bg-danger ms-1" th:text="${#lists.size(pendingIncoming)}"></span>
+            </div>
+            <div class="list-group list-group-flush">
+                <div th:each="req : ${pendingIncoming}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-person" th:if="${req.requesterAvatarUrl == null}"></i>
+                            <img th:if="${req.requesterAvatarUrl != null}" th:src="${req.requesterAvatarUrl}"
+                                 class="rounded-circle" style="width: 40px; height: 40px;" alt="Avatar">
+                        </div>
+                        <div>
+                            <strong th:text="${req.requesterDisplayName != null ? req.requesterDisplayName : req.requesterUsername}"></strong>
+                            <span class="text-muted ms-1" th:text="'@' + ${req.requesterUsername}"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <form th:action="@{/social/friends/{id}/accept(id=${req.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-success me-1">
+                                <i class="bi bi-check-lg"></i> Kabul
+                            </button>
+                        </form>
+                        <form th:action="@{/social/friends/{id}/reject(id=${req.id})}" method="post" class="d-inline">
+                            <button type="submit" class="btn btn-sm btn-outline-danger">
+                                <i class="bi bi-x-lg"></i> Reddet
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Outgoing Requests -->
+        <div class="card mb-4" th:if="${pendingOutgoing != null and !pendingOutgoing.isEmpty()}">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-send me-2"></i>Gönderilen İstekler
+            </div>
+            <div class="list-group list-group-flush">
+                <div th:each="req : ${pendingOutgoing}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px;">
+                            <i class="bi bi-person" th:if="${req.receiverAvatarUrl == null}"></i>
+                            <img th:if="${req.receiverAvatarUrl != null}" th:src="${req.receiverAvatarUrl}"
+                                 class="rounded-circle" style="width: 40px; height: 40px;" alt="Avatar">
+                        </div>
+                        <div>
+                            <strong th:text="${req.receiverDisplayName != null ? req.receiverDisplayName : req.receiverUsername}"></strong>
+                            <span class="text-muted ms-1" th:text="'@' + ${req.receiverUsername}"></span>
+                        </div>
+                    </div>
+                    <span class="badge bg-warning text-dark">Bekliyor</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Friend List -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-people me-2"></i>Arkadaşlarım
+                <span class="badge bg-primary ms-1" th:text="${#lists.size(friends)}"></span>
+            </div>
+            <div class="list-group list-group-flush" th:if="${friends != null and !friends.isEmpty()}">
+                <div th:each="friend : ${friends}" class="list-group-item d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
+                             style="width: 45px; height: 45px;">
+                            <i class="bi bi-person-fill" th:if="${friend.avatarUrl == null}"></i>
+                            <img th:if="${friend.avatarUrl != null}" th:src="${friend.avatarUrl}"
+                                 class="rounded-circle" style="width: 45px; height: 45px;" alt="Avatar">
+                        </div>
+                        <div>
+                            <strong th:text="${friend.displayName != null ? friend.displayName : friend.username}"></strong>
+                            <span class="text-muted ms-1" th:text="'@' + ${friend.username}"></span>
+                            <br>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar-check me-1"></i>
+                                Arkadaş
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body text-center text-muted" th:if="${friends == null or friends.isEmpty()}">
+                <i class="bi bi-people fs-1 d-block mb-2"></i>
+                <p>Henüz arkadaşınız yok. Yukarıdan arkadaşlık isteği gönderebilirsiniz.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== LEADERBOARD TAB ==================== -->
+    <div th:if="${activeTab == 'leaderboard'}">
+        <!-- Category Filter -->
+        <div class="card mb-4">
+            <div class="card-body">
+                <form th:action="@{/social}" method="get" class="row g-2 align-items-end">
+                    <input type="hidden" name="tab" value="leaderboard">
+                    <div class="col-auto">
+                        <label for="categoryFilter" class="form-label">Kategori</label>
+                        <select class="form-select" id="categoryFilter" name="category" onchange="this.form.submit()">
+                            <option value="">Tümü</option>
+                            <option th:each="cat : ${categories}" th:value="${cat.name()}" th:text="${cat.name()}"
+                                    th:selected="${selectedCategory != null and selectedCategory.name() == cat.name()}"></option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Leaderboard Table -->
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-trophy me-2"></i>Liderboard
+            </div>
+            <div class="table-responsive" th:if="${leaderboard != null and !leaderboard.isEmpty()}">
+                <table class="table table-hover mb-0">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 60px;">#</th>
+                            <th>Kullanıcı</th>
+                            <th>Hedef</th>
+                            <th>İlerleme</th>
+                            <th>Seri</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="entry : ${leaderboard}"
+                            th:classappend="${entry.currentUser ? 'table-primary fw-bold' : ''}">
+                            <td>
+                                <span th:if="${entry.rank == 1}" class="text-warning fs-5">🥇</span>
+                                <span th:if="${entry.rank == 2}" class="text-secondary fs-5">🥈</span>
+                                <span th:if="${entry.rank == 3}" class="fs-5">🥉</span>
+                                <span th:if="${entry.rank > 3}" th:text="${entry.rank}"></span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-2"
+                                         style="width: 32px; height: 32px; font-size: 0.8rem;">
+                                        <i class="bi bi-person-fill" th:if="${entry.avatarUrl == null}"></i>
+                                        <img th:if="${entry.avatarUrl != null}" th:src="${entry.avatarUrl}"
+                                             class="rounded-circle" style="width: 32px; height: 32px;" alt="Avatar">
+                                    </div>
+                                    <span th:text="${entry.displayName != null ? entry.displayName : entry.username}"></span>
+                                    <span th:if="${entry.currentUser}" class="badge bg-primary ms-2">Sen</span>
+                                </div>
+                            </td>
+                            <td th:text="${entry.goalTitle}"></td>
+                            <td>
+                                <div class="progress" style="height: 20px; min-width: 100px;">
+                                    <div class="progress-bar" role="progressbar"
+                                         th:style="'width: ' + ${entry.completionPct} + '%'"
+                                         th:text="${entry.completionPct} + '%'">
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-success">
+                                    <i class="bi bi-fire me-1"></i>
+                                    <span th:text="${entry.currentStreak}"></span> gün
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-body text-center text-muted" th:if="${leaderboard == null or leaderboard.isEmpty()}">
+                <i class="bi bi-trophy fs-1 d-block mb-2"></i>
+                <p>Henüz liderboard verisi yok. Arkadaş ekleyerek yarışmaya başlayın!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== ACTIVITY FEED TAB ==================== -->
+    <div th:if="${activeTab == 'activity'}">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-activity me-2"></i>Aktivite Akışı
+                <small class="text-muted ms-2">(Son 7 gün)</small>
+            </div>
+            <div class="list-group list-group-flush" th:if="${feedItems != null and !feedItems.isEmpty()}">
+                <div th:each="item : ${feedItems}" class="list-group-item">
+                    <div class="d-flex align-items-start">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3"
+                             style="width: 40px; height: 40px; min-width: 40px;"
+                             th:classappend="${item.type == 'ENTRY' ? 'bg-primary text-white' : (item.type == 'GOAL_COMPLETED' ? 'bg-success text-white' : 'bg-warning text-dark')}">
+                            <i th:if="${item.type == 'ENTRY'}" class="bi bi-pencil-square"></i>
+                            <i th:if="${item.type == 'GOAL_COMPLETED'}" class="bi bi-check-circle"></i>
+                            <i th:if="${item.type == 'BADGE_EARNED'}" class="bi bi-award"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div>
+                                <strong th:text="${item.displayName != null ? item.displayName : item.username}"></strong>
+                                <span class="text-muted" th:text="'@' + ${item.username}"></span>
+                            </div>
+                            <div th:if="${item.type == 'ENTRY'}">
+                                <span th:text="${item.goalTitle}"></span> hedefine
+                                <strong th:text="${item.value + ' ' + item.unit}"></strong> kayıt ekledi.
+                            </div>
+                            <div th:if="${item.type == 'GOAL_COMPLETED'}">
+                                <span class="text-success fw-bold">
+                                    <i class="bi bi-check-circle me-1"></i>
+                                    <span th:text="${item.goalTitle}"></span> hedefini tamamladı! 🎉
+                                </span>
+                            </div>
+                            <div th:if="${item.type == 'BADGE_EARNED'}">
+                                <span class="text-warning fw-bold">
+                                    <i class="bi bi-award me-1"></i>
+                                    <span th:text="${item.value}"></span> rozetini kazandı!
+                                </span>
+                            </div>
+                            <small class="text-muted">
+                                <i class="bi bi-clock me-1"></i>
+                                <span th:text="${item.timestamp}"></span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body text-center text-muted" th:if="${feedItems == null or feedItems.isEmpty()}">
+                <i class="bi bi-activity fs-1 d-block mb-2"></i>
+                <p>Henüz aktivite yok. Arkadaşlarınız hedeflerine kayıt ekledikçe burada görünecek.</p>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+

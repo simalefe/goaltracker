@@ -3,9 +3,17 @@ package com.goaltracker.controller;
 import com.goaltracker.dto.ApiResponse;
 import com.goaltracker.dto.request.*;
 import com.goaltracker.dto.response.AuthResponse;
+import com.goaltracker.dto.response.UserBadgeResponse;
 import com.goaltracker.dto.response.UserResponse;
+import com.goaltracker.dto.response.UserStatsResponse;
+import com.goaltracker.model.enums.GoalStatus;
+import com.goaltracker.repository.GoalEntryRepository;
+import com.goaltracker.repository.GoalRepository;
 import com.goaltracker.service.AuthService;
+import com.goaltracker.service.BadgeService;
+import com.goaltracker.service.StreakService;
 import com.goaltracker.service.UserService;
+import com.goaltracker.util.SecurityUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,10 +32,24 @@ public class ApiAuthController {
 
     private final AuthService authService;
     private final UserService userService;
+    private final BadgeService badgeService;
+    private final StreakService streakService;
+    private final SecurityUtils securityUtils;
+    private final GoalEntryRepository goalEntryRepository;
+    private final GoalRepository goalRepository;
 
-    public ApiAuthController(AuthService authService, UserService userService) {
+    public ApiAuthController(AuthService authService, UserService userService,
+                             BadgeService badgeService, StreakService streakService,
+                             SecurityUtils securityUtils,
+                             GoalEntryRepository goalEntryRepository,
+                             GoalRepository goalRepository) {
         this.authService = authService;
         this.userService = userService;
+        this.badgeService = badgeService;
+        this.streakService = streakService;
+        this.securityUtils = securityUtils;
+        this.goalEntryRepository = goalEntryRepository;
+        this.goalRepository = goalRepository;
     }
 
     @PostMapping("/auth/register")
@@ -119,6 +141,25 @@ public class ApiAuthController {
             @RequestParam("q") String query) {
         List<UserResponse> users = userService.searchUsers(query);
         return ResponseEntity.ok(ApiResponse.ok(users));
+    }
+
+    // ---- Badges & Stats (Phase 5) ----
+    @GetMapping("/users/me/badges")
+    public ResponseEntity<ApiResponse<List<UserBadgeResponse>>> getUserBadges() {
+        Long userId = securityUtils.getCurrentUserId();
+        List<UserBadgeResponse> badges = badgeService.getUserBadges(userId);
+        return ResponseEntity.ok(ApiResponse.ok(badges));
+    }
+
+    @GetMapping("/users/me/stats")
+    public ResponseEntity<ApiResponse<UserStatsResponse>> getUserStats() {
+        Long userId = securityUtils.getCurrentUserId();
+        long totalEntries = goalEntryRepository.countByGoal_User_Id(userId);
+        long completedGoals = goalRepository.countByUserIdAndStatus(userId, GoalStatus.COMPLETED);
+        int totalStreakDays = streakService.getTotalStreakDays(userId);
+        long earnedBadgeCount = badgeService.getUserBadgeCount(userId);
+        UserStatsResponse stats = new UserStatsResponse(totalEntries, completedGoals, totalStreakDays, earnedBadgeCount);
+        return ResponseEntity.ok(ApiResponse.ok(stats));
     }
 }
 

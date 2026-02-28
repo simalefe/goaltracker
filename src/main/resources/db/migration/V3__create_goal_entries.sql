@@ -1,10 +1,10 @@
 -- V3: Goal Entries tablosu
 CREATE TABLE goal_entries (
     id            BIGINT AUTO_INCREMENT PRIMARY KEY,
-    goal_id       BIGINT        NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
-    entry_date    DATE          NOT NULL,
-    actual_value  NUMERIC(10,2) NOT NULL,
-    note          TEXT,
+    goal_id       BIGINT          NOT NULL REFERENCES goals(id) ON DELETE CASCADE,
+    entry_date    DATE            NOT NULL,
+    actual_value  NUMERIC(12,2)   NOT NULL,
+    note          VARCHAR(500),
     created_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at    TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE(goal_id, entry_date),

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Profil — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-person-circle me-2"></i>Profilim</h1>
+    </div>
+
+    <!-- Kullanıcı Bilgileri -->
+    <div class="row mb-4">
+        <div class="col-lg-4">
+            <div class="card shadow-sm text-center">
+                <div class="card-body py-4">
+                    <div class="mb-3">
+                        <img th:if="${user.avatarUrl() != null}" th:src="${user.avatarUrl()}"
+                             class="rounded-circle" style="width: 96px; height: 96px; object-fit: cover;"
+                             alt="Avatar">
+                        <div th:if="${user.avatarUrl() == null}"
+                             class="rounded-circle bg-primary text-white d-inline-flex align-items-center justify-content-center"
+                             style="width: 96px; height: 96px; font-size: 2.5rem;">
+                            <span th:text="${user.displayName() != null ? user.displayName().substring(0,1).toUpperCase() : user.username().substring(0,1).toUpperCase()}">U</span>
+                        </div>
+                    </div>
+                    <h4 th:text="${user.displayName() != null ? user.displayName() : user.username()}">Kullanıcı</h4>
+                    <p class="text-muted mb-1">@<span th:text="${user.username()}">username</span></p>
+                    <p class="text-muted small" th:text="${user.email()}">email@example.com</p>
+                    <span th:if="${user.emailVerified()}" class="badge bg-success">
+                        <i class="bi bi-check-circle me-1"></i>E-posta Doğrulanmış
+                    </span>
+                    <span th:if="${!user.emailVerified()}" class="badge bg-warning text-dark">
+                        <i class="bi bi-exclamation-circle me-1"></i>E-posta Doğrulanmamış
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- İstatistikler -->
+        <div class="col-lg-8">
+            <div class="row g-3">
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card text-bg-primary shadow-sm h-100">
+                        <div class="card-body text-center py-4">
+                            <div class="fs-1 mb-2">📝</div>
+                            <h6 class="card-title mb-1">Toplam Kayıt</h6>
+                            <p class="card-text fs-3 fw-bold mb-0" th:text="${stats.totalEntries()}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card text-bg-success shadow-sm h-100">
+                        <div class="card-body text-center py-4">
+                            <div class="fs-1 mb-2">✅</div>
+                            <h6 class="card-title mb-1">Tamamlanan</h6>
+                            <p class="card-text fs-3 fw-bold mb-0" th:text="${stats.completedGoals()}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card text-bg-danger shadow-sm h-100">
+                        <div class="card-body text-center py-4">
+                            <div class="fs-1 mb-2">🔥</div>
+                            <h6 class="card-title mb-1">Streak Günleri</h6>
+                            <p class="card-text fs-3 fw-bold mb-0" th:text="${stats.totalStreakDays()}">0</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-3">
+                    <div class="card text-bg-warning shadow-sm h-100">
+                        <div class="card-body text-center py-4">
+                            <div class="fs-1 mb-2">🏅</div>
+                            <h6 class="card-title mb-1">Rozetler</h6>
+                            <p class="card-text fs-3 fw-bold mb-0" th:text="${stats.earnedBadgeCount()}">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Aylık Rapor İndir -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-file-earmark-pdf me-2"></i>Aylık Rapor İndir</h5>
+        </div>
+        <div class="card-body">
+            <form id="monthlyReportForm" class="row g-3 align-items-end">
+                <div class="col-auto">
+                    <label for="reportYear" class="form-label">Yıl</label>
+                    <select id="reportYear" class="form-select form-select-sm" style="width:100px;">
+                        <script th:inline="javascript">
+                            // populate current year +/- range
+                        </script>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <label for="reportMonth" class="form-label">Ay</label>
+                    <select id="reportMonth" class="form-select form-select-sm" style="width:120px;">
+                        <option value="1">Ocak</option>
+                        <option value="2">Şubat</option>
+                        <option value="3">Mart</option>
+                        <option value="4">Nisan</option>
+                        <option value="5">Mayıs</option>
+                        <option value="6">Haziran</option>
+                        <option value="7">Temmuz</option>
+                        <option value="8">Ağustos</option>
+                        <option value="9">Eylül</option>
+                        <option value="10">Ekim</option>
+                        <option value="11">Kasım</option>
+                        <option value="12">Aralık</option>
+                    </select>
+                </div>
+                <div class="col-auto">
+                    <button type="button" id="downloadReportBtn" class="btn btn-danger btn-sm">
+                        <i class="bi bi-download me-1"></i>Aylık Raporu İndir
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            // Populate year dropdown
+            const yearSelect = document.getElementById('reportYear');
+            const currentYear = new Date().getFullYear();
+            for (let y = currentYear; y >= currentYear - 3; y--) {
+                const opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+
+            // Set current month
+            const monthSelect = document.getElementById('reportMonth');
+            monthSelect.value = new Date().getMonth() + 1;
+
+            // Download handler
+            document.getElementById('downloadReportBtn').addEventListener('click', function(e) {
+                const year = yearSelect.value;
+                const month = monthSelect.value;
+                e.currentTarget.disabled = true;
+                e.currentTarget.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>İndiriliyor...';
+                const targetBtn = e.currentTarget;
+
+                fetch(`/api/users/me/reports/monthly?year=${year}&month=${month}`)
+                    .then(response => {
+                        if (!response.ok) throw new Error('Rapor oluşturulamadı.');
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `aylik-rapor-${year}-${String(month).padStart(2, '0')}.pdf`;
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        URL.revokeObjectURL(url);
+                    })
+                    .catch(err => {
+                        alert('Rapor indirilemedi: ' + err.message);
+                    })
+                    .finally(() => {
+                        targetBtn.disabled = false;
+                        targetBtn.innerHTML = '<i class="bi bi-download me-1"></i>Aylık Raporu İndir';
+                    });
+            });
+        });
+    </script>
+
+    <!-- Kazanılan Rozetler -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-trophy me-2"></i>Kazanılan Rozetler</h5>
+        </div>
+        <div class="card-body" th:if="${#lists.isEmpty(earnedBadges)}">
+            <div class="text-center py-4">
+                <i class="bi bi-trophy text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-2 mb-0">Henüz rozet kazanılmamış. İlerleme kaydederek rozetleri aç!</p>
+            </div>
+        </div>
+        <div class="card-body" th:if="${!#lists.isEmpty(earnedBadges)}">
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-4 col-lg-3" th:each="ub : ${earnedBadges}">
+                    <div class="card h-100 border-success">
+                        <div class="card-body text-center">
+                            <div style="font-size: 2.5rem;" th:text="${ub.badge().icon()}">🎯</div>
+                            <h6 class="card-title mt-2" th:text="${ub.badge().name()}">Rozet Adı</h6>
+                            <p class="card-text small text-muted" th:text="${ub.badge().description()}">Açıklama</p>
+                            <small class="text-success">
+                                <i class="bi bi-check-circle-fill me-1"></i>
+                                <span th:text="${#temporals.format(ub.earnedAt(), 'dd MMM yyyy')}">tarih</span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kilitli Rozetler -->
+    <div class="card shadow-sm mb-4" th:if="${!#lists.isEmpty(lockedBadges)}">
+        <div class="card-header">
+            <h5 class="mb-0"><i class="bi bi-lock me-2"></i>Kilitli Rozetler</h5>
+        </div>
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-sm-6 col-md-4 col-lg-3" th:each="badge : ${lockedBadges}">
+                    <div class="card h-100 border-secondary" style="opacity: 0.6;">
+                        <div class="card-body text-center">
+                            <div style="font-size: 2.5rem; filter: grayscale(100%);" th:text="${badge.icon()}">🎯</div>
+                            <h6 class="card-title mt-2 text-muted" th:text="${badge.name()}">Rozet Adı</h6>
+                            <p class="card-text small text-muted" th:text="${badge.description()}">Açıklama</p>
+                            <small class="text-secondary">
+                                <i class="bi bi-lock-fill me-1"></i>Kilitli
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>
+

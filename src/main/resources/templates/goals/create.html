@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Yeni Hedef — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <div class="d-flex justify-content-between align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-plus-circle me-2"></i>Yeni Hedef</h1>
+        <a th:href="@{/goals}" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i>Geri
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form th:action="@{/goals}" th:object="${goalForm}" method="post" novalidate data-disable-on-submit>
+
+                        <!-- Title -->
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Başlık <span class="text-danger">*</span></label>
+                            <input type="text" id="title" th:field="*{title}" class="form-control"
+                                   th:classappend="${#fields.hasErrors('title') ? 'is-invalid' : ''}"
+                                   placeholder="Hedefinize bir ad verin" maxlength="200">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('title')}" th:errors="*{title}">Hata</div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Açıklama</label>
+                            <textarea id="description" th:field="*{description}" class="form-control" rows="3"
+                                      th:classappend="${#fields.hasErrors('description') ? 'is-invalid' : ''}"
+                                      placeholder="Hedefinizi açıklayın (opsiyonel)" maxlength="1000"></textarea>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Hata</div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Unit -->
+                            <div class="col-md-6 mb-3">
+                                <label for="unit" class="form-label">Birim <span class="text-danger">*</span></label>
+                                <input type="text" id="unit" th:field="*{unit}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('unit') ? 'is-invalid' : ''}"
+                                       placeholder="ör: sayfa, km, saat" maxlength="50">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('unit')}" th:errors="*{unit}">Hata</div>
+                            </div>
+
+                            <!-- Target Value -->
+                            <div class="col-md-6 mb-3">
+                                <label for="targetValue" class="form-label">Hedef Değeri <span class="text-danger">*</span></label>
+                                <input type="number" id="targetValue" th:field="*{targetValue}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('targetValue') ? 'is-invalid' : ''}"
+                                       placeholder="ör: 300" min="0.01" step="0.01">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('targetValue')}" th:errors="*{targetValue}">Hata</div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Goal Type -->
+                            <div class="col-md-4 mb-3">
+                                <label for="goalType" class="form-label">Hedef Tipi <span class="text-danger">*</span></label>
+                                <select id="goalType" th:field="*{goalType}" class="form-select"
+                                        th:classappend="${#fields.hasErrors('goalType') ? 'is-invalid' : ''}">
+                                    <option value="">Seçiniz</option>
+                                    <option th:each="t : ${goalTypes}" th:value="${t.name()}"
+                                            th:text="${t.name() == 'DAILY' ? 'Günlük' : t.name() == 'CUMULATIVE' ? 'Kümülatif' : 'Oran'}">Tip</option>
+                                </select>
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('goalType')}" th:errors="*{goalType}">Hata</div>
+                                <small class="form-text text-muted">Günlük: her gün, Kümülatif: toplam, Oran: periyodik</small>
+                            </div>
+
+                            <!-- Frequency -->
+                            <div class="col-md-4 mb-3">
+                                <label for="frequency" class="form-label">Frekans</label>
+                                <select id="frequency" th:field="*{frequency}" class="form-select">
+                                    <option th:each="f : ${frequencies}" th:value="${f.name()}"
+                                            th:text="${f.name() == 'DAILY' ? 'Günlük' : f.name() == 'WEEKLY' ? 'Haftalık' : 'Aylık'}">Frekans</option>
+                                </select>
+                            </div>
+
+                            <!-- Category -->
+                            <div class="col-md-4 mb-3">
+                                <label for="category" class="form-label">Kategori</label>
+                                <select id="category" th:field="*{category}" class="form-select">
+                                    <option value="">Seçiniz (opsiyonel)</option>
+                                    <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.name()}">Kategori</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <!-- Start Date -->
+                            <div class="col-md-4 mb-3">
+                                <label for="startDate" class="form-label">Başlangıç Tarihi <span class="text-danger">*</span></label>
+                                <input type="date" id="startDate" th:field="*{startDate}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('startDate') ? 'is-invalid' : ''}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('startDate')}" th:errors="*{startDate}">Hata</div>
+                            </div>
+
+                            <!-- End Date -->
+                            <div class="col-md-4 mb-3">
+                                <label for="endDate" class="form-label">Bitiş Tarihi <span class="text-danger">*</span></label>
+                                <input type="date" id="endDate" th:field="*{endDate}" class="form-control"
+                                       th:classappend="${#fields.hasErrors('endDate') ? 'is-invalid' : ''}">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('endDate')}" th:errors="*{endDate}">Hata</div>
+                            </div>
+
+                            <!-- Color -->
+                            <div class="col-md-4 mb-3">
+                                <label for="color" class="form-label">Renk</label>
+                                <input type="color" id="color" th:field="*{color}" class="form-control form-control-color w-100"
+                                       th:classappend="${#fields.hasErrors('color') ? 'is-invalid' : ''}"
+                                       value="#3B82F6">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('color')}" th:errors="*{color}">Hata</div>
+                            </div>
+                        </div>
+
+                        <!-- Class-level validation errors (EndDateAfterStartDate) -->
+                        <div th:if="${#fields.hasGlobalErrors()}" class="alert alert-danger">
+                            <span th:each="err : ${#fields.globalErrors()}" th:text="${err}">Global Error</span>
+                        </div>
+
+                        <div class="d-flex gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Hedef Oluştur
+                            </button>
+                            <a th:href="@{/goals}" class="btn btn-outline-secondary">İptal</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</main>
+</body>
+</html>
+

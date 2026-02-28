@@ -43,6 +43,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final MailService mailService;
+    private final NotificationService notificationService;
 
     public AuthService(UserRepository userRepository,
                        RefreshTokenRepository refreshTokenRepository,
@@ -50,7 +51,8 @@ public class AuthService {
                        PasswordResetTokenRepository passwordResetTokenRepository,
                        PasswordEncoder passwordEncoder,
                        JwtService jwtService,
-                       MailService mailService) {
+                       MailService mailService,
+                       NotificationService notificationService) {
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
         this.emailVerificationTokenRepository = emailVerificationTokenRepository;
@@ -58,6 +60,7 @@ public class AuthService {
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
         this.mailService = mailService;
+        this.notificationService = notificationService;
     }
 
     @Transactional
@@ -78,6 +81,9 @@ public class AuthService {
         user.setActive(true);
         user.setEmailVerified(false);
         user = userRepository.save(user);
+
+        // Create default notification settings
+        notificationService.ensureSettingsExist(user.getId());
 
         // Email verification token
         String verifyToken = UUID.randomUUID().toString();

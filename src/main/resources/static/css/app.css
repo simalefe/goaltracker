@@ -87,3 +87,67 @@ main {
     }
 }
 
+/* --- Phase 4: Chart & Dashboard --- */
+
+/* Chart container minimum heights */
+.chart-container {
+    position: relative;
+    min-height: 200px;
+}
+
+@media (min-width: 1024px) {
+    .chart-container {
+        min-height: 300px;
+    }
+}
+
+/* Heatmap */
+.heatmap-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.heatmap-grid [role="gridcell"]:focus {
+    outline: 2px solid #3B82F6;
+    outline-offset: 1px;
+    z-index: 1;
+}
+
+.heatmap-grid [role="gridcell"]:hover {
+    outline: 1px solid #6B7280;
+    outline-offset: 0;
+}
+
+/* Dashboard summary cards hover */
+.row .card[role="status"] {
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.row .card[role="status"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+}
+
+/* Goal summary card in dashboard */
+.list-group-item-action:hover .progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Tab content chart area */
+.tab-pane canvas {
+    width: 100% !important;
+}
+
+/* Chart loading skeleton */
+.chart-loading {
+    background: linear-gradient(90deg, #f3f4f6 25%, #e5e7eb 50%, #f3f4f6 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 0.375rem;
+}
+
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+

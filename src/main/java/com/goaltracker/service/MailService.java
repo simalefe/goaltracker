@@ -69,6 +69,11 @@ public class MailService {
         sendHtmlEmail(to, subject, body);
     }
 
+    @Async
+    public void sendNotificationEmail(String to, String subject, String htmlBody) {
+        sendHtmlEmail(to, subject, htmlBody);
+    }
+
     private void sendHtmlEmail(String to, String subject, String htmlBody) {
         try {
             MimeMessage message = mailSender.createMimeMessage();
