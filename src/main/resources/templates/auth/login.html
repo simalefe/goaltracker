@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap — GoalTracker Pro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; }
+        .auth-card { max-width: 450px; margin: 80px auto; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth-card">
+            <div class="text-center mb-4">
+                <i class="bi bi-bullseye text-primary" style="font-size: 3rem;"></i>
+                <h2 class="mt-2">GoalTracker Pro</h2>
+                <p class="text-muted">Hesabınıza giriş yapın</p>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <!-- Flash mesajları -->
+                    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+                        <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+                        <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${errorMessage}"></span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    <div th:if="${param.error}" class="alert alert-danger">
+                        <i class="bi bi-exclamation-triangle me-2"></i>E-posta veya şifre hatalı.
+                    </div>
+                    <div th:if="${param.logout}" class="alert alert-success">
+                        <i class="bi bi-check-circle me-2"></i>Başarıyla çıkış yaptınız.
+                    </div>
+
+                    <form th:action="@{/auth/login}" method="post">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">E-posta</label>
+                            <input type="email" id="username" name="username" class="form-control"
+                                   placeholder="ornek@email.com" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Şifre</label>
+                            <input type="password" id="password" name="password" class="form-control"
+                                   placeholder="••••••••" required>
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="form-check">
+                                <input type="checkbox" class="form-check-input" id="remember" name="remember-me">
+                                <label class="form-check-label" for="remember">Beni hatırla</label>
+                            </div>
+                            <a th:href="@{/auth/forgot-password}" class="text-decoration-none">Şifremi Unuttum</a>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100 py-2">
+                            <i class="bi bi-box-arrow-in-right me-2"></i>Giriş Yap
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <p class="text-center mt-3">
+                Hesabınız yok mu? <a th:href="@{/auth/register}" class="text-decoration-none fw-bold">Kayıt Ol</a>
+            </p>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

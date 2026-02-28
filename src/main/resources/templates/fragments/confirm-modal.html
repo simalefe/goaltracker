@@ -1,0 +1,22 @@
+<!-- Confirm Modal Fragment — Silme / Durum Değiştirme Onayı -->
+<div th:fragment="confirmModal(modalId, title, message, actionUrl, btnText, btnClass)"
+     class="modal fade" th:id="${modalId}" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" th:text="${title}">Onay</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body">
+                <p th:text="${message}">Bu işlemi onaylıyor musunuz?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                <form th:action="${actionUrl}" method="post" style="display:inline;">
+                    <button type="submit" th:class="${btnClass}" th:text="${btnText}">Onayla</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

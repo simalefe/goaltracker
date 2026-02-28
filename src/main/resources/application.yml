@@ -1,0 +1,96 @@
+# =============================================
+# GoalTracker Pro — Application Configuration
+# =============================================
+
+spring:
+  application:
+    name: goaltracker
+
+  # ---- DataSource (H2 In-Memory) ----
+  datasource:
+    url: jdbc:h2:mem:goaltracker;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  # ---- H2 Console ----
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+      settings:
+        web-allow-others: false
+
+  # ---- JPA / Hibernate ----
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  # ---- Flyway ----
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+
+  # ---- Thymeleaf ----
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    mode: HTML
+    encoding: UTF-8
+
+  # ---- Mail (placeholder — Phase 1) ----
+  mail:
+    host: ${MAIL_HOST:smtp.gmail.com}
+    port: ${MAIL_PORT:587}
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# ---- Server ----
+server:
+  port: 8080
+  error:
+    whitelabel:
+      enabled: false
+
+# ---- Actuator ----
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      show-details: always
+
+# ---- Logging ----
+logging:
+  level:
+    root: INFO
+    com.goaltracker: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+    org.flywaydb: INFO
+
+# ---- JWT ----
+jwt:
+  secret: ${JWT_SECRET:mySecretKeyAtLeast256BitsLongForHS256AlgorithmGoalTracker2026}
+  access-expiration: ${JWT_ACCESS_EXP:900000}
+  refresh-expiration: ${JWT_REFRESH_EXP:604800000}
+
+# ---- App ----
+app:
+  base-url: ${APP_BASE_URL:http://localhost:8080}
+

@@ -1,0 +1,33 @@
+# ---- Build ----
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# ---- IDE ----
+.idea/
+*.iws
+*.iml
+*.ipr
+.vscode/
+*.swp
+*.swo
+*~
+
+# ---- OS ----
+.DS_Store
+Thumbs.db
+
+# ---- Environment ----
+.env
+*.env.local
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- H2 DB file (if file mode) ----
+*.db
+*.mv.db
+*.trace.db
+

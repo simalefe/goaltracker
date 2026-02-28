@@ -1,0 +1,89 @@
+/* =============================================
+   GoalTracker Pro — Özel CSS
+   Bootstrap 5 üzerine eklentiler
+   ============================================= */
+
+/* --- Sidebar --- */
+.sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 100;
+    padding: 56px 0 0; /* navbar yüksekliği */
+    box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+}
+
+.sidebar-sticky {
+    height: calc(100vh - 56px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    font-weight: 500;
+    color: #333;
+    padding: .75rem 1rem;
+    border-radius: 0;
+}
+
+.sidebar .nav-link:hover {
+    color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.05);
+}
+
+.sidebar .nav-link.active {
+    color: #0d6efd;
+    background-color: rgba(13, 110, 253, 0.1);
+    border-left: 3px solid #0d6efd;
+}
+
+.sidebar .nav-link .bi {
+    width: 1.25em;
+}
+
+/* --- Main Content (sidebar kadar sola kaydır) --- */
+main {
+    margin-top: 56px; /* navbar yüksekliği */
+}
+
+/* --- Durum Renkleri --- */
+.status-active   { color: #198754; } /* yeşil */
+.status-paused   { color: #ffc107; } /* sarı */
+.status-completed{ color: #0d6efd; } /* mavi */
+.status-archived { color: #6c757d; } /* gri */
+
+/* --- Gap Renkleri --- */
+.gap-ahead   { color: #198754; } /* yeşil — ileride */
+.gap-on-track{ color: #0d6efd; } /* mavi — yolunda */
+.gap-behind  { color: #dc3545; } /* kırmızı — geride */
+
+/* --- Kategori Renkleri --- */
+.category-education { border-left-color: #3B82F6 !important; }
+.category-health    { border-left-color: #10B981 !important; }
+.category-fitness   { border-left-color: #F59E0B !important; }
+.category-finance   { border-left-color: #8B5CF6 !important; }
+.category-personal  { border-left-color: #EC4899 !important; }
+
+/* --- Card Hover --- */
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.1);
+    transition: all .2s ease-in-out;
+}
+
+/* --- Responsive --- */
+@media (max-width: 767.98px) {
+    .sidebar {
+        position: static;
+        padding-top: 0;
+        box-shadow: none;
+    }
+    .sidebar-sticky {
+        height: auto;
+    }
+    main {
+        margin-top: 56px;
+    }
+}
+

@@ -1,0 +1,21 @@
+<!-- Pagination Fragment -->
+<nav th:fragment="pagination(page, baseUrl)" aria-label="Sayfa navigasyonu"
+     th:if="${page != null && page.totalPages > 1}">
+    <ul class="pagination justify-content-center">
+        <li class="page-item" th:classappend="${page.first ? 'disabled' : ''}">
+            <a class="page-link" th:href="@{${baseUrl}(page=${page.number - 1})}" aria-label="Önceki">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item" th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+            th:classappend="${i == page.number ? 'active' : ''}">
+            <a class="page-link" th:href="@{${baseUrl}(page=${i})}" th:text="${i + 1}">1</a>
+        </li>
+        <li class="page-item" th:classappend="${page.last ? 'disabled' : ''}">
+            <a class="page-link" th:href="@{${baseUrl}(page=${page.number + 1})}" aria-label="Sonraki">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+

@@ -1,0 +1,14 @@
+# ---- Dev Profile ----
+spring:
+  jpa:
+    show-sql: true
+  h2:
+    console:
+      enabled: true
+
+logging:
+  level:
+    com.goaltracker: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Dashboard — GoalTracker Pro</title>
+</head>
+<body>
+    <layout:fragment name="content">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </h1>
+        </div>
+
+        <!-- Özet Kartları (Phase 4'te doldurulacak) -->
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-primary">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-bullseye fs-1 me-3"></i>
+                            <div>
+                                <h6 class="card-title mb-0">Aktif Hedefler</h6>
+                                <p class="card-text fs-3 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-success">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-check-circle fs-1 me-3"></i>
+                            <div>
+                                <h6 class="card-title mb-0">Bugün Giriş</h6>
+                                <p class="card-text fs-3 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-info">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-graph-up-arrow fs-1 me-3"></i>
+                            <div>
+                                <h6 class="card-title mb-0">Yolunda</h6>
+                                <p class="card-text fs-3 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-warning">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-graph-down-arrow fs-1 me-3"></i>
+                            <div>
+                                <h6 class="card-title mb-0">Geride</h6>
+                                <p class="card-text fs-3 fw-bold mb-0">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boş durum -->
+        <div class="text-center py-5">
+            <i class="bi bi-bullseye text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted">Henüz hedefin yok!</h4>
+            <p class="text-muted">İlk hedefini oluşturarak başla.</p>
+            <a th:href="@{/goals/new}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Yeni Hedef Oluştur
+            </a>
+        </div>
+    </layout:fragment>
+</body>
+</html>
+
