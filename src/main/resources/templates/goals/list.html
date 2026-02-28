@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Hedefler — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <!-- Header -->
+    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+        <h1 class="h2"><i class="bi bi-bullseye me-2"></i>Hedeflerim</h1>
+        <a th:href="@{/goals/new}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>Yeni Hedef
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/goals}" method="get" class="row g-3 align-items-end">
+                <!-- Status Tabs -->
+                <div class="col-12">
+                    <div class="btn-group" role="group" aria-label="Durum filtresi">
+                        <a th:href="@{/goals(category=${currentCategory}, goalType=${currentGoalType}, query=${currentQuery}, sort=${currentSort})}"
+                           class="btn btn-outline-secondary"
+                           th:classappend="${currentStatus == null ? 'active' : ''}">Tümü</a>
+                        <a th:each="s : ${statuses}"
+                           th:href="@{/goals(status=${s.name()}, category=${currentCategory}, goalType=${currentGoalType}, query=${currentQuery}, sort=${currentSort})}"
+                           class="btn btn-outline-secondary"
+                           th:classappend="${currentStatus != null && currentStatus.name() == s.name() ? 'active' : ''}"
+                           th:text="${s.name() == 'ACTIVE' ? 'Aktif' : s.name() == 'PAUSED' ? 'Duraklatıldı' : s.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'}">Status</a>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="col-md-3">
+                    <label for="category" class="form-label">Kategori</label>
+                    <select id="category" name="category" class="form-select">
+                        <option value="">Tüm Kategoriler</option>
+                        <option th:each="c : ${categories}" th:value="${c.name()}" th:text="${c.name()}"
+                                th:selected="${currentCategory != null && currentCategory.name() == c.name()}">Cat</option>
+                    </select>
+                </div>
+
+                <!-- Goal Type Filter -->
+                <div class="col-md-3">
+                    <label for="goalType" class="form-label">Hedef Tipi</label>
+                    <select id="goalType" name="goalType" class="form-select">
+                        <option value="">Tüm Tipler</option>
+                        <option th:each="t : ${goalTypes}" th:value="${t.name()}" th:text="${t.name()}"
+                                th:selected="${currentGoalType != null && currentGoalType.name() == t.name()}">Type</option>
+                    </select>
+                </div>
+
+                <!-- Search -->
+                <div class="col-md-4">
+                    <label for="query" class="form-label">Ara</label>
+                    <input type="text" id="query" name="query" class="form-control"
+                           placeholder="Hedef adı ara..." th:value="${currentQuery}">
+                </div>
+
+                <!-- Hidden fields to preserve state -->
+                <input type="hidden" name="status" th:value="${currentStatus?.name()}">
+                <input type="hidden" name="sort" th:value="${currentSort}">
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">
+                        <i class="bi bi-search me-1"></i>Filtrele
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sort Options -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <small class="text-muted" th:text="'Toplam ' + ${goals.totalElements} + ' hedef'">Toplam 0 hedef</small>
+        <div class="dropdown">
+            <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                <i class="bi bi-sort-down me-1"></i>Sıralama
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" th:href="@{/goals(status=${currentStatus?.name()}, category=${currentCategory?.name()}, goalType=${currentGoalType?.name()}, query=${currentQuery}, sort='createdAt,desc')}">En yeni önce</a></li>
+                <li><a class="dropdown-item" th:href="@{/goals(status=${currentStatus?.name()}, category=${currentCategory?.name()}, goalType=${currentGoalType?.name()}, query=${currentQuery}, sort='createdAt,asc')}">En eski önce</a></li>
+                <li><a class="dropdown-item" th:href="@{/goals(status=${currentStatus?.name()}, category=${currentCategory?.name()}, goalType=${currentGoalType?.name()}, query=${currentQuery}, sort='endDate,asc')}">Bitiş tarihi yakın</a></li>
+                <li><a class="dropdown-item" th:href="@{/goals(status=${currentStatus?.name()}, category=${currentCategory?.name()}, goalType=${currentGoalType?.name()}, query=${currentQuery}, sort='title,asc')}">Alfabetik A-Z</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Empty State -->
+    <div th:if="${goals.content.isEmpty()}" class="text-center py-5">
+        <i class="bi bi-bullseye display-1 text-muted"></i>
+        <h3 class="mt-3 text-muted">Henüz hedef eklenmemiş</h3>
+        <p class="text-muted">İlk hedefinizi oluşturarak başlayın!</p>
+        <a th:href="@{/goals/new}" class="btn btn-primary mt-2">
+            <i class="bi bi-plus-lg me-1"></i>Yeni Hedef Oluştur
+        </a>
+    </div>
+
+    <!-- Goal Cards Grid -->
+    <div th:if="${!goals.content.isEmpty()}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
+        <div class="col" th:each="goal : ${goals.content}">
+            <div class="card h-100 shadow-sm goal-card" th:style="'border-left: 4px solid ' + (${goal.color} ?: '#6c757d')">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <h5 class="card-title mb-0">
+                            <a th:href="@{/goals/{id}(id=${goal.id})}" class="text-decoration-none"
+                               th:text="${goal.title}">Hedef</a>
+                        </h5>
+                        <span class="badge"
+                              th:classappend="${goal.status.name() == 'ACTIVE' ? 'bg-success' : goal.status.name() == 'PAUSED' ? 'bg-warning text-dark' : goal.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary'}"
+                              th:text="${goal.status.name() == 'ACTIVE' ? 'Aktif' : goal.status.name() == 'PAUSED' ? 'Duraklatıldı' : goal.status.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'}">Status</span>
+                    </div>
+
+                    <!-- Category Badge -->
+                    <span th:if="${goal.category != null}" class="badge bg-light text-dark mb-2"
+                          th:text="${goal.category}">Kategori</span>
+
+                    <!-- Progress Bar -->
+                    <div class="mb-2">
+                        <div class="d-flex justify-content-between small text-muted mb-1">
+                            <span th:text="${goal.unit}">birim</span>
+                            <span th:text="${goal.completionPct != null ? goal.completionPct + '%' : '0%'}">0%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar"
+                                 th:classappend="${goal.completionPct != null && goal.completionPct.intValue() >= 100 ? 'bg-success' : goal.completionPct != null && goal.completionPct.intValue() >= 50 ? 'bg-primary' : 'bg-warning'}"
+                                 role="progressbar"
+                                 th:style="'width: ' + (${goal.completionPct} ?: 0) + '%'"
+                                 th:attr="aria-valuenow=${goal.completionPct ?: 0}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer info -->
+                    <div class="d-flex justify-content-between align-items-center small text-muted mt-3">
+                        <span>
+                            <i class="bi bi-calendar-event me-1"></i>
+                            <span th:text="${goal.daysLeft > 0 ? goal.daysLeft + ' gün kaldı' : 'Süre doldu'}">gün kaldı</span>
+                        </span>
+                        <span th:if="${goal.currentStreak > 0}">
+                            <i class="bi bi-fire me-1 text-danger"></i>
+                            <span th:text="${goal.currentStreak + ' gün'}">streak</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <div th:replace="~{fragments/pagination :: pagination(${goals}, '/goals')}"></div>
+
+</main>
+</body>
+</html>
+

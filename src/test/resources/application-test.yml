@@ -1,0 +1,58 @@
+# =============================================
+# GoalTracker Pro — Test Profile Configuration
+# =============================================
+
+spring:
+  application:
+    name: goaltracker-test
+
+  datasource:
+    url: jdbc:h2:mem:goaltrackertest;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: false
+    clean-disabled: false
+
+  thymeleaf:
+    cache: false
+
+  mail:
+    host: localhost
+    port: 25
+    username: test
+    password: test
+
+  # Disable async for tests
+  task:
+    execution:
+      pool:
+        core-size: 1
+
+# JWT — short expiration for test speed
+jwt:
+  secret: testSecretKeyAtLeast256BitsLongForHS256AlgorithmGoalTracker2026Test
+  access-expiration: 900000
+  refresh-expiration: 604800000
+
+# App
+app:
+  base-url: http://localhost:8080
+
+# Logging — minimal for tests
+logging:
+  level:
+    root: WARN
+    com.goaltracker: INFO
+    org.springframework.web: WARN
+

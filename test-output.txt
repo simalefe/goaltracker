@@ -1,0 +1,7 @@
+﻿.\mvnw.cmd : no main manifest attribute, in C:\goaltracker\\.mvn\wrapper\maven-wrapper.jar
+At line:1 char:20
++ cd C:\goaltracker; .\mvnw.cmd test 2>&1 | Out-File -FilePath C:\goalt ...
++                    ~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (no main manifes...ven-wrapper.jar:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 

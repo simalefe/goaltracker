@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title th:text="${goal.title + ' — GoalTracker Pro'}">Hedef Detay</title>
+</head>
+<body>
+<main layout:fragment="content">
+
+    <div class="d-flex justify-content-between flex-wrap align-items-center pb-2 mb-3 border-bottom">
+        <div class="d-flex align-items-center">
+            <div class="me-3" th:if="${goal.color != null}"
+                 th:style="'width:12px; height:12px; border-radius:50%; background:' + ${goal.color}"></div>
+            <h1 class="h2 mb-0" th:text="${goal.title}">Hedef</h1>
+            <span class="badge ms-3"
+                  th:classappend="${goal.status.name() == 'ACTIVE' ? 'bg-success' : goal.status.name() == 'PAUSED' ? 'bg-warning text-dark' : goal.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary'}"
+                  th:text="${goal.status.name() == 'ACTIVE' ? 'Aktif' : goal.status.name() == 'PAUSED' ? 'Duraklatıldı' : goal.status.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'}">Status</span>
+        </div>
+        <div class="d-flex gap-2">
+            <!-- Export Buttons -->
+            <div class="btn-group me-2">
+                <a th:href="@{/api/goals/{id}/export/excel(id=${goal.id})}"
+                   class="btn btn-success btn-sm" download>
+                    <i class="bi bi-file-earmark-excel"></i> Excel
+                </a>
+                <a th:href="@{/api/goals/{id}/export/pdf(id=${goal.id})}"
+                   class="btn btn-danger btn-sm" download>
+                    <i class="bi bi-file-pdf"></i> PDF
+                </a>
+                <a th:href="@{/api/goals/{id}/export/csv(id=${goal.id})}"
+                   class="btn btn-primary btn-sm" download>
+                    <i class="bi bi-filetype-csv"></i> CSV
+                </a>
+            </div>
+            <a th:href="@{/goals/{id}/edit(id=${goal.id})}" class="btn btn-outline-primary btn-sm">
+                <i class="bi bi-pencil me-1"></i>Düzenle
+            </a>
+            <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="bi bi-trash me-1"></i>Sil
+            </button>
+            <a th:href="@{/goals}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left me-1"></i>Geri
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Goal Info -->
+        <div class="col-lg-8">
+            <!-- Description -->
+            <div class="card mb-4 shadow-sm" th:if="${goal.description != null && !goal.description.isEmpty()}">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-2 text-muted">Açıklama</h6>
+                    <p class="card-text" th:text="${goal.description}">Açıklama</p>
+                </div>
+            </div>
+
+            <!-- Stats Cards Row 1 -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">İlerleme</div>
+                            <div class="h4 mb-0" th:text="${stats.completionPct + '%'}">0%</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Mevcut</div>
+                            <div class="h4 mb-0">
+                                <span th:text="${stats.currentProgress}">0</span>
+                                <small class="text-muted" th:text="${goal.unit}">birim</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Kalan Gün</div>
+                            <div class="h4 mb-0" th:text="${stats.daysLeft}">0</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Durum</div>
+                            <div class="h5 mb-0">
+                                <span th:if="${stats.trackingStatus == 'AHEAD'}" class="text-success">
+                                    <i class="bi bi-arrow-up-circle-fill me-1"></i>İleride
+                                </span>
+                                <span th:if="${stats.trackingStatus == 'ON_TRACK'}" class="text-primary">
+                                    <i class="bi bi-check-circle-fill me-1"></i>Yolunda
+                                </span>
+                                <span th:if="${stats.trackingStatus == 'BEHIND'}" class="text-danger">
+                                    <i class="bi bi-arrow-down-circle-fill me-1"></i>Geride
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards Row 2 -->
+            <div class="row mb-4">
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Hedef</div>
+                            <div class="h5 mb-0">
+                                <span th:text="${stats.targetValue}">0</span>
+                                <small class="text-muted" th:text="${goal.unit}">birim</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Fark</div>
+                            <div class="h5 mb-0"
+                                 th:classappend="${stats.gap.signum() > 0 ? 'text-success' : stats.gap.signum() < 0 ? 'text-danger' : 'text-primary'}">
+                                <span th:if="${stats.gap.signum() > 0}">+</span>
+                                <span th:text="${stats.gap}">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Günlük Gereken</div>
+                            <div class="h5 mb-0">
+                                <span th:text="${stats.requiredRate}">0</span>
+                                <small class="text-muted" th:text="${goal.unit + '/gün'}">birim/gün</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-2">
+                    <div class="card text-center shadow-sm h-100">
+                        <div class="card-body py-3">
+                            <div class="text-muted small">Kayıt Sayısı</div>
+                            <div class="h5 mb-0" th:text="${stats.entryCount}">0</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Streak Widget -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-2">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body py-3 d-flex align-items-center">
+                            <span class="fs-1 me-3">🔥</span>
+                            <div>
+                                <div class="text-muted small">Mevcut Streak</div>
+                                <div class="h4 mb-0">
+                                    <span th:text="${stats.currentStreak()}">0</span>
+                                    <small class="text-muted">gün</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body py-3 d-flex align-items-center">
+                            <span class="fs-1 me-3">🏆</span>
+                            <div>
+                                <div class="text-muted small">En Uzun Streak</div>
+                                <div class="h4 mb-0">
+                                    <span th:text="${stats.longestStreak()}">0</span>
+                                    <small class="text-muted">gün</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-body">
+                    <h6 class="card-subtitle mb-3 text-muted">İlerleme Çubuğu</h6>
+                    <div class="progress" style="height: 24px;">
+                        <div class="progress-bar progress-bar-striped"
+                             th:classappend="${stats.completionPct.intValue() >= 100 ? 'bg-success' : stats.trackingStatus == 'BEHIND' ? 'bg-warning' : 'bg-primary'}"
+                             role="progressbar"
+                             th:style="'width: ' + ${stats.completionPct} + '%'"
+                             th:text="${stats.completionPct + '%'}">0%</div>
+                    </div>
+                    <div class="d-flex justify-content-between small text-muted mt-2">
+                        <span>Mevcut: <span th:text="${stats.currentProgress}">0</span> <span th:text="${goal.unit}">birim</span></span>
+                        <span>Beklenen: <span th:text="${stats.expectedPct + '%'}">0%</span></span>
+                        <span>Hedef: <span th:text="${stats.targetValue}">0</span> <span th:text="${goal.unit}">birim</span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Area — Tabs: İstatistikler | Grafik | Kayıtlar -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <ul class="nav nav-tabs card-header-tabs" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="stats-tab" data-bs-toggle="tab"
+                                    data-bs-target="#statsPane" type="button" role="tab"
+                                    aria-controls="statsPane" aria-selected="true">
+                                <i class="bi bi-bar-chart-steps me-1"></i>İstatistikler
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="chart-tab" data-bs-toggle="tab"
+                                    data-bs-target="#chartPane" type="button" role="tab"
+                                    aria-controls="chartPane" aria-selected="false">
+                                <i class="bi bi-graph-up me-1"></i>Grafik
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="heatmap-tab" data-bs-toggle="tab"
+                                    data-bs-target="#heatmapPane" type="button" role="tab"
+                                    aria-controls="heatmapPane" aria-selected="false">
+                                <i class="bi bi-grid-3x3 me-1"></i>Heatmap
+                            </button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- İstatistikler Tab -->
+                        <div class="tab-pane fade show active" id="statsPane" role="tabpanel" aria-labelledby="stats-tab">
+                            <div class="row align-items-center">
+                                <div class="col-md-4 text-center mb-3 mb-md-0">
+                                    <div style="max-width:160px; max-height:160px; margin:0 auto;">
+                                        <canvas id="completionDonutChart"
+                                                th:data-completion-pct="${stats.completionPct()}"
+                                                aria-label="Tamamlanma oranı doughnut grafiği"
+                                                role="img"></canvas>
+                                    </div>
+                                    <div class="mt-2 small text-muted">Tamamlanma Oranı</div>
+                                </div>
+                                <div class="col-md-8">
+                                    <dl class="row mb-0">
+                                        <dt class="col-6 text-muted">Mevcut İlerleme</dt>
+                                        <dd class="col-6">
+                                            <span th:text="${stats.currentProgress()}">0</span>
+                                            <small class="text-muted" th:text="${goal.unit}">birim</small>
+                                        </dd>
+                                        <dt class="col-6 text-muted">Beklenen</dt>
+                                        <dd class="col-6" th:text="${stats.expectedPct() + '%'}">0%</dd>
+                                        <dt class="col-6 text-muted">Fark (Gap)</dt>
+                                        <dd class="col-6"
+                                            th:classappend="${stats.gap().signum() > 0 ? 'text-success' : stats.gap().signum() < 0 ? 'text-danger' : 'text-primary'}">
+                                            <span th:if="${stats.gap().signum() > 0}">+</span>
+                                            <span th:text="${stats.gap()}">0</span>
+                                        </dd>
+                                        <dt class="col-6 text-muted">Günlük Gereken</dt>
+                                        <dd class="col-6">
+                                            <span th:text="${stats.requiredRate()}">0</span>
+                                            <small class="text-muted" th:text="${goal.unit + '/gün'}">birim/gün</small>
+                                        </dd>
+                                    </dl>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Grafik Tab -->
+                        <div class="tab-pane fade" id="chartPane" role="tabpanel" aria-labelledby="chart-tab">
+                            <div class="mb-4">
+                                <h6 class="text-muted mb-3">Planlanan vs Gerçekleşen</h6>
+                                <div style="position:relative; min-height:300px;">
+                                    <canvas id="plannedVsActualChart"
+                                            th:data-goal-id="${goal.id}"
+                                            aria-label="Planlanan ve gerçekleşen ilerleme çizgi grafiği"
+                                            role="img"></canvas>
+                                </div>
+                            </div>
+                            <hr>
+                            <div class="mt-4">
+                                <h6 class="text-muted mb-3">Günlük İlerleme</h6>
+                                <div style="position:relative; min-height:250px;">
+                                    <canvas id="dailyBarChart"
+                                            th:data-goal-id="${goal.id}"
+                                            aria-label="Günlük ilerleme bar grafiği"
+                                            role="img"></canvas>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Heatmap Tab -->
+                        <div class="tab-pane fade" id="heatmapPane" role="tabpanel" aria-labelledby="heatmap-tab">
+                            <h6 class="text-muted mb-3">Aktivite Haritası</h6>
+                            <div id="activityHeatmap"
+                                 th:data-goal-id="${goal.id}"
+                                 th:data-daily-target="${stats.requiredRate()}"
+                                 aria-label="Aktivite heatmap grafiği"
+                                 role="grid">
+                            </div>
+                            <div class="d-flex align-items-center gap-2 mt-3 small text-muted">
+                                <span>Az</span>
+                                <div style="width:12px;height:12px;border-radius:2px;background:#E5E7EB;"></div>
+                                <div style="width:12px;height:12px;border-radius:2px;background:#bbf7d0;"></div>
+                                <div style="width:12px;height:12px;border-radius:2px;background:#4ade80;"></div>
+                                <div style="width:12px;height:12px;border-radius:2px;background:#16a34a;"></div>
+                                <div style="width:12px;height:12px;border-radius:2px;background:#15803d;"></div>
+                                <span>Çok</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Entry Add Button -->
+            <div class="card mb-4 shadow-sm" th:if="${goal.status.name() == 'ACTIVE'}">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h6 class="mb-0"><i class="bi bi-journal-plus me-2"></i>İlerleme Kaydı Ekle</h6>
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEntryModal">
+                        <i class="bi bi-plus-lg me-1"></i>Yeni Kayıt
+                    </button>
+                </div>
+            </div>
+
+            <!-- Entry List Table -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0"><i class="bi bi-list-ul me-2"></i>Kayıt Geçmişi</h6>
+                </div>
+                <div class="card-body" th:if="${#lists.isEmpty(entries)}">
+                    <div class="text-center py-4">
+                        <i class="bi bi-journal display-4 text-muted"></i>
+                        <p class="text-muted mt-2">Henüz kayıt eklenmemiş.</p>
+                        <button th:if="${goal.status.name() == 'ACTIVE'}" type="button" class="btn btn-outline-primary"
+                                data-bs-toggle="modal" data-bs-target="#addEntryModal">
+                            <i class="bi bi-plus-lg me-1"></i>İlk Kaydı Ekle
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive" th:if="${!#lists.isEmpty(entries)}">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Tarih</th>
+                            <th>Değer</th>
+                            <th>Not</th>
+                            <th class="text-end" th:if="${goal.status.name() == 'ACTIVE'}">İşlem</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="entry : ${entries}">
+                            <td th:text="${entry.entryDate()}">2026-03-01</td>
+                            <td>
+                                <span th:text="${entry.actualValue()}">0</span>
+                                <small class="text-muted" th:text="${goal.unit}">birim</small>
+                            </td>
+                            <td>
+                                <span th:text="${entry.note() != null ? entry.note() : '—'}" class="text-truncate d-inline-block" style="max-width: 200px;">—</span>
+                            </td>
+                            <td class="text-end" th:if="${goal.status.name() == 'ACTIVE'}">
+                                <button type="button" class="btn btn-outline-primary btn-sm me-1"
+                                        data-bs-toggle="modal"
+                                        th:data-bs-target="'#editEntryModal-' + ${entry.id()}"
+                                        title="Düzenle">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form th:action="@{/goals/{gid}/entries/{eid}/delete(gid=${goal.id}, eid=${entry.id()})}"
+                                      method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                                            onclick="return confirm('Bu kaydı silmek istediğinizden emin misiniz?')"
+                                            title="Sil">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Details & Actions -->
+        <div class="col-lg-4">
+            <!-- Goal Details Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0">Hedef Bilgileri</h6>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5 text-muted">Tip</dt>
+                        <dd class="col-sm-7"
+                            th:text="${goal.goalType.name() == 'DAILY' ? 'Günlük' : goal.goalType.name() == 'CUMULATIVE' ? 'Kümülatif' : 'Oran'}">Tip</dd>
+
+                        <dt class="col-sm-5 text-muted">Frekans</dt>
+                        <dd class="col-sm-7"
+                            th:text="${goal.frequency.name() == 'DAILY' ? 'Günlük' : goal.frequency.name() == 'WEEKLY' ? 'Haftalık' : 'Aylık'}">Frekans</dd>
+
+                        <dt class="col-sm-5 text-muted">Birim</dt>
+                        <dd class="col-sm-7" th:text="${goal.unit}">birim</dd>
+
+                        <dt class="col-sm-5 text-muted">Kategori</dt>
+                        <dd class="col-sm-7" th:text="${goal.category != null ? goal.category : '—'}">Kategori</dd>
+
+                        <dt class="col-sm-5 text-muted">Başlangıç</dt>
+                        <dd class="col-sm-7" th:text="${goal.startDate}">2026-01-01</dd>
+
+                        <dt class="col-sm-5 text-muted">Bitiş</dt>
+                        <dd class="col-sm-7" th:text="${goal.endDate}">2026-12-31</dd>
+
+                        <dt class="col-sm-5 text-muted">Toplam Gün</dt>
+                        <dd class="col-sm-7" th:text="${stats.totalDays}">0</dd>
+
+                        <dt class="col-sm-5 text-muted">Geçen Gün</dt>
+                        <dd class="col-sm-7" th:text="${stats.daysSinceStart}">0</dd>
+
+                        <dt class="col-sm-5 text-muted">Oluşturulma</dt>
+                        <dd class="col-sm-7" th:text="${#temporals.format(goal.createdAt, 'dd MMM yyyy')}">tarih</dd>
+                    </dl>
+                </div>
+            </div>
+
+            <!-- Status Change Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header">
+                    <h6 class="mb-0">Durum Değiştir</h6>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <form th:if="${goal.status.name() == 'ACTIVE'}" th:action="@{/goals/{id}/status(id=${goal.id})}" method="post">
+                            <input type="hidden" name="newStatus" value="PAUSED">
+                            <button type="submit" class="btn btn-warning w-100">
+                                <i class="bi bi-pause-circle me-1"></i>Duraklat
+                            </button>
+                        </form>
+
+                        <form th:if="${goal.status.name() == 'ACTIVE'}" th:action="@{/goals/{id}/status(id=${goal.id})}" method="post">
+                            <input type="hidden" name="newStatus" value="COMPLETED">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-check-circle me-1"></i>Tamamla
+                            </button>
+                        </form>
+
+                        <form th:if="${goal.status.name() == 'PAUSED'}" th:action="@{/goals/{id}/status(id=${goal.id})}" method="post">
+                            <input type="hidden" name="newStatus" value="ACTIVE">
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="bi bi-play-circle me-1"></i>Devam Et
+                            </button>
+                        </form>
+
+                        <form th:if="${goal.status.name() != 'ARCHIVED'}" th:action="@{/goals/{id}/status(id=${goal.id})}" method="post">
+                            <input type="hidden" name="newStatus" value="ARCHIVED">
+                            <button type="submit" class="btn btn-outline-secondary w-100">
+                                <i class="bi bi-archive me-1"></i>Arşivle
+                            </button>
+                        </form>
+
+                        <div th:if="${goal.status.name() == 'ARCHIVED'}" class="text-muted text-center">
+                            <i class="bi bi-archive me-1"></i>Bu hedef arşivlenmiş — durum değiştirilemez.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Entry Modal -->
+    <div class="modal fade" id="addEntryModal" tabindex="-1" aria-labelledby="addEntryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form th:action="@{/goals/{id}/entries(id=${goal.id})}" method="post" data-disable-on-submit>
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addEntryModalLabel">
+                            <i class="bi bi-journal-plus me-2"></i>İlerleme Kaydı Ekle
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="entryDate" class="form-label">Tarih</label>
+                            <input type="date" class="form-control" id="entryDate" name="entryDate"
+                                   th:min="${goal.startDate}" th:max="${goal.endDate}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="actualValue" class="form-label">
+                                Değer (<span th:text="${goal.unit}">birim</span>)
+                            </label>
+                            <input type="number" class="form-control" id="actualValue" name="actualValue"
+                                   step="0.01" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="note" class="form-label">Not (opsiyonel)</label>
+                            <textarea class="form-control" id="note" name="note" rows="2" maxlength="500"></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-lg me-1"></i>Kaydet
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Entry Modals -->
+    <div th:each="entry : ${entries}">
+        <div class="modal fade" th:id="'editEntryModal-' + ${entry.id()}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/goals/{gid}/entries/{eid}/edit(gid=${goal.id}, eid=${entry.id()})}" method="post">
+                        <div class="modal-header">
+                            <h5 class="modal-title">
+                                <i class="bi bi-pencil me-2"></i>Kaydı Düzenle — <span th:text="${entry.entryDate()}">tarih</span>
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Kapat"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    Değer (<span th:text="${goal.unit}">birim</span>)
+                                </label>
+                                <input type="number" class="form-control" name="actualValue"
+                                       step="0.01" min="0" th:value="${entry.actualValue()}" required>
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Not (opsiyonel)</label>
+                                <textarea class="form-control" name="note" rows="2"
+                                          maxlength="500" th:text="${entry.note()}"></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">İptal</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>Güncelle
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div th:replace="~{fragments/confirm-modal :: confirmModal(
+        'deleteModal',
+        'Hedefi Sil',
+        'Bu hedefi silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.',
+        @{/goals/{id}/delete(id=${goal.id})},
+        'Sil',
+        'btn btn-danger'
+    )}"></div>
+
+</main>
+
+<layout:fragment name="scripts">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script th:src="@{/js/charts.js}"></script>
+</layout:fragment>
+</body>
+</html>
+

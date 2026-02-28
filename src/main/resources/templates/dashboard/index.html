@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Dashboard — GoalTracker Pro</title>
+</head>
+<body>
+    <layout:fragment name="content">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <h1 class="h2">
+                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+            </h1>
+            <small class="text-muted" th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy, EEEE')}">28 Şubat 2026, Cumartesi</small>
+        </div>
+
+        <!-- Özet Kartları -->
+        <div class="row g-4 mb-4">
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-primary shadow-sm" role="status" th:aria-label="'Aktif Hedefler: ' + ${activeGoalCount}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="fs-1 me-3">🎯</span>
+                            <div>
+                                <h6 class="card-title mb-0">Aktif Hedefler</h6>
+                                <p class="card-text fs-3 fw-bold mb-0" th:text="${activeGoalCount}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-success shadow-sm" role="status" th:aria-label="'Bugün Giriş: ' + ${todayEntryCount}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="fs-1 me-3">✅</span>
+                            <div>
+                                <h6 class="card-title mb-0">Bugün Giriş</h6>
+                                <p class="card-text fs-3 fw-bold mb-0" th:text="${todayEntryCount}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-info shadow-sm" role="status" th:aria-label="'Yolunda: ' + ${goalsOnTrack}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="fs-1 me-3">📈</span>
+                            <div>
+                                <h6 class="card-title mb-0">Yolunda</h6>
+                                <p class="card-text fs-3 fw-bold mb-0" th:text="${goalsOnTrack}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-6 col-xl-3">
+                <div class="card text-bg-warning shadow-sm" role="status" th:aria-label="'Geride: ' + ${goalsBehind}">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <span class="fs-1 me-3">📉</span>
+                            <div>
+                                <h6 class="card-title mb-0">Geride</h6>
+                                <p class="card-text fs-3 fw-bold mb-0" th:text="${goalsBehind}">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Boş durum -->
+        <div th:if="${activeGoalCount == 0}" class="text-center py-5">
+            <i class="bi bi-bullseye text-muted" style="font-size: 4rem;"></i>
+            <h4 class="mt-3 text-muted">Henüz hedefin yok!</h4>
+            <p class="text-muted">İlk hedefini oluşturarak başla.</p>
+            <a th:href="@{/goals/new}" class="btn btn-primary btn-lg">
+                <i class="bi bi-plus-circle me-2"></i>Yeni Hedef Oluştur
+            </a>
+        </div>
+
+        <!-- İçerik: hedef varsa göster -->
+        <div th:if="${activeGoalCount > 0}">
+            <div class="row">
+                <!-- Sol: Top Hedefler -->
+                <div class="col-lg-8">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="bi bi-trophy me-2"></i>En İyi Hedefler</h6>
+                            <a th:href="@{/goals}" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+                        </div>
+                        <div class="card-body" th:if="${#lists.isEmpty(topGoals)}">
+                            <p class="text-muted mb-0 text-center py-3">Henüz hedef özeti yok.</p>
+                        </div>
+                        <div class="list-group list-group-flush" th:if="${!#lists.isEmpty(topGoals)}">
+                            <a th:each="goal : ${topGoals}"
+                               th:href="@{/goals/{id}(id=${goal.goalId()})}"
+                               class="list-group-item list-group-item-action"
+                               th:aria-label="'Hedef: ' + ${goal.title()} + ', ' + ${goal.completionPct()} + '% tamamlandı'">
+                                <div class="d-flex align-items-center">
+                                    <!-- Color bar -->
+                                    <div class="me-3" th:if="${goal.color() != null}"
+                                         th:style="'width:6px; height:48px; border-radius:3px; background:' + ${goal.color()}"></div>
+                                    <div class="me-3" th:if="${goal.color() == null}"
+                                         style="width:6px; height:48px; border-radius:3px; background:#6B7280;"></div>
+                                    <!-- Content -->
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1" th:text="${goal.title()}">Hedef Adı</h6>
+                                                <small class="text-muted">
+                                                    <span th:if="${goal.category() != null}" class="badge bg-light text-dark me-1" th:text="${goal.category()}">Kategori</span>
+                                                    <span th:text="${goal.daysLeft() + ' gün kaldı'}">0 gün kaldı</span>
+                                                </small>
+                                            </div>
+                                            <div class="text-end">
+                                                <div class="fw-bold" th:text="${goal.completionPct() + '%'}">0%</div>
+                                                <small th:classappend="${goal.gap().signum() >= 0 ? 'text-success' : 'text-danger'}">
+                                                    <span th:if="${goal.gap().signum() > 0}">+</span>
+                                                    <span th:text="${goal.gap()}">0</span>
+                                                    <span th:text="${goal.unit()}">birim</span>
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <!-- Mini progress bar -->
+                                        <div class="progress mt-2" style="height: 6px;">
+                                            <div class="progress-bar"
+                                                 th:classappend="${goal.completionPct().intValue() >= 100 ? 'bg-warning' : goal.trackingStatus() == 'BEHIND' ? 'bg-danger' : 'bg-success'}"
+                                                 role="progressbar"
+                                                 th:style="'width:' + ${goal.completionPct()} + '%'"
+                                                 th:attr="aria-valuenow=${goal.completionPct()}"
+                                                 aria-valuemin="0" aria-valuemax="100">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Streak'ler -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="bi bi-fire me-2"></i>Streak'ler</h6>
+                            <span class="badge bg-danger" th:text="${totalStreakDays} + ' gün toplam'">0 gün toplam</span>
+                        </div>
+                        <div class="card-body text-center py-4" th:if="${#lists.isEmpty(streaks)}">
+                            <i class="bi bi-fire text-muted" style="font-size: 2rem;"></i>
+                            <p class="text-muted mt-2 mb-0">Henüz aktif streak yok. Günlük kayıt girerek streak başlat!</p>
+                        </div>
+                        <div class="list-group list-group-flush" th:if="${!#lists.isEmpty(streaks)}">
+                            <div th:each="streak : ${streaks}" class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <span class="text-danger me-1">🔥</span>
+                                        <span class="fw-bold" th:text="${streak.currentStreak()} + ' gün'">0 gün</span>
+                                    </div>
+                                    <small class="text-muted">
+                                        En uzun: <span th:text="${streak.longestStreak()}">0</span> gün
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sağ: Son Aktiviteler -->
+                <div class="col-lg-4">
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Son Aktiviteler</h6>
+                        </div>
+                        <div class="card-body" th:if="${#lists.isEmpty(recentEntries)}">
+                            <p class="text-muted mb-0 text-center py-3">Henüz ilerleme kaydı yok.</p>
+                        </div>
+                        <div class="list-group list-group-flush" th:if="${!#lists.isEmpty(recentEntries)}">
+                            <a th:each="entry : ${recentEntries}"
+                               th:href="@{/goals/{id}(id=${entry.goalId()})}"
+                               class="list-group-item list-group-item-action">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-0 small" th:text="${entry.goalTitle()}">Hedef</h6>
+                                        <small class="text-muted" th:text="${entry.entryDate()}">2026-02-28</small>
+                                    </div>
+                                    <div class="text-end">
+                                        <span class="fw-bold" th:text="${entry.actualValue()}">0</span>
+                                        <small class="text-muted" th:text="${entry.unit()}">birim</small>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Dashboard Doughnut Overview -->
+                    <div class="card shadow-sm mb-4">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Genel Durum</h6>
+                        </div>
+                        <div class="card-body text-center">
+                            <canvas id="dashboardOverviewChart" style="max-height: 220px;"
+                                    aria-label="Hedeflerin genel durumu doughnut grafiği"
+                                    th:data-on-track="${goalsOnTrack}"
+                                    th:data-behind="${goalsBehind}"></canvas>
+                            <div class="mt-3 d-flex justify-content-center gap-4 small">
+                                <span><i class="bi bi-circle-fill text-success me-1"></i>Yolunda</span>
+                                <span><i class="bi bi-circle-fill text-danger me-1"></i>Geride</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </layout:fragment>
+
+    <layout:fragment name="scripts">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+        <script th:src="@{/js/charts.js}"></script>
+    </layout:fragment>
+</body>
+</html>
+

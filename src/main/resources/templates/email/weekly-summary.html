@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+    <div style="background-color: #0d6efd; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+        <h2 style="margin: 0;">📊 Haftalık Özet</h2>
+    </div>
+    <div style="padding: 20px; background-color: #f8f9fa; border-radius: 0 0 8px 8px;">
+        <p style="font-size: 16px; color: #333;">Merhaba,</p>
+        <p style="font-size: 16px; color: #333;">İşte geçen haftanızın özeti:</p>
+        <table style="width: 100%; border-collapse: collapse; margin: 16px 0;">
+            <tr style="background-color: #e9ecef;">
+                <td style="padding: 10px; font-weight: bold;">Toplam İlerleme Kaydı</td>
+                <td style="padding: 10px; text-align: right;" th:text="${totalEntries}">0</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; font-weight: bold;">Katkı Yapılan Hedef</td>
+                <td style="padding: 10px; text-align: right;" th:text="${goalsWithEntries} + '/' + ${totalGoals}">0/0</td>
+            </tr>
+            <tr style="background-color: #e9ecef;">
+                <td style="padding: 10px; font-weight: bold;">Tamamlanma Oranı</td>
+                <td style="padding: 10px; text-align: right;" th:text="'%' + ${completionPct}">%0</td>
+            </tr>
+            <tr>
+                <td style="padding: 10px; font-weight: bold;">En Uzun Seri</td>
+                <td style="padding: 10px; text-align: right;" th:text="${maxStreak} + ' gün'">0 gün</td>
+            </tr>
+        </table>
+        <hr style="border: none; border-top: 1px solid #dee2e6;">
+        <p style="color: #888; font-size: 12px; text-align: center;">
+            GoalTracker Pro — Bu özeti bildirim ayarlarınızdan kapatabilirsiniz.
+        </p>
+    </div>
+</body>
+</html>
+
