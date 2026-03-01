@@ -9,26 +9,26 @@
 <main layout:fragment="content">
 
     <!-- Header -->
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="bi bi-bullseye me-2"></i>Hedeflerim</h1>
-        <a th:href="@{/goals/new}" class="btn btn-primary">
+    <div class="page-header">
+        <h1 class="h2"><i class="bi bi-bullseye me-2" style="color: var(--accent-cyan);"></i>Hedeflerim</h1>
+        <a th:href="@{/goals/new}" class="btn-gradient-pulse">
             <i class="bi bi-plus-lg me-1"></i>Yeni Hedef
         </a>
     </div>
 
     <!-- Filters -->
-    <div class="card mb-4">
+    <div class="card mb-4 animate-fade-in stagger-1">
         <div class="card-body">
             <form th:action="@{/goals}" method="get" class="row g-3 align-items-end">
-                <!-- Status Tabs -->
+                <!-- Status Tabs — pill style -->
                 <div class="col-12">
-                    <div class="btn-group" role="group" aria-label="Durum filtresi">
+                    <div class="nav-pills-glass" role="group" aria-label="Durum filtresi">
                         <a th:href="@{/goals(category=${currentCategory}, goalType=${currentGoalType}, query=${currentQuery}, sort=${currentSort})}"
-                           class="btn btn-outline-secondary"
+                           class="nav-link"
                            th:classappend="${currentStatus == null ? 'active' : ''}">Tümü</a>
                         <a th:each="s : ${statuses}"
                            th:href="@{/goals(status=${s.name()}, category=${currentCategory}, goalType=${currentGoalType}, query=${currentQuery}, sort=${currentSort})}"
-                           class="btn btn-outline-secondary"
+                           class="nav-link"
                            th:classappend="${currentStatus != null && currentStatus.name() == s.name() ? 'active' : ''}"
                            th:text="${s.name() == 'ACTIVE' ? 'Aktif' : s.name() == 'PAUSED' ? 'Duraklatıldı' : s.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'}">Status</a>
                     </div>
@@ -75,8 +75,8 @@
     </div>
 
     <!-- Sort Options -->
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <small class="text-muted" th:text="'Toplam ' + ${goals.totalElements} + ' hedef'">Toplam 0 hedef</small>
+    <div class="d-flex justify-content-between align-items-center mb-3 animate-fade-in stagger-2">
+        <small style="color: var(--text-muted);" th:text="'Toplam ' + ${goals.totalElements} + ' hedef'">Toplam 0 hedef</small>
         <div class="dropdown">
             <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
                 <i class="bi bi-sort-down me-1"></i>Sıralama
@@ -91,19 +91,20 @@
     </div>
 
     <!-- Empty State -->
-    <div th:if="${goals.content.isEmpty()}" class="text-center py-5">
-        <i class="bi bi-bullseye display-1 text-muted"></i>
-        <h3 class="mt-3 text-muted">Henüz hedef eklenmemiş</h3>
-        <p class="text-muted">İlk hedefinizi oluşturarak başlayın!</p>
-        <a th:href="@{/goals/new}" class="btn btn-primary mt-2">
+    <div th:if="${goals.content.isEmpty()}" class="empty-state animate-fade-in stagger-3">
+        <i class="bi bi-bullseye empty-icon"></i>
+        <h4>Henüz hedef eklenmemiş</h4>
+        <p>İlk hedefinizi oluşturarak başlayın!</p>
+        <a th:href="@{/goals/new}" class="btn-gradient-pulse mt-2">
             <i class="bi bi-plus-lg me-1"></i>Yeni Hedef Oluştur
         </a>
     </div>
 
     <!-- Goal Cards Grid -->
     <div th:if="${!goals.content.isEmpty()}" class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-4">
-        <div class="col" th:each="goal : ${goals.content}">
-            <div class="card h-100 shadow-sm goal-card" th:style="'border-left: 4px solid ' + (${goal.color} ?: '#6c757d')">
+        <div class="col animate-fade-in" th:each="goal, iterStat : ${goals.content}"
+             th:classappend="'stagger-' + ${(iterStat.index % 6) + 3}">
+            <div class="card h-100 goal-card" th:style="'border-left: 4px solid ' + (${goal.color} ?: 'var(--text-muted)')">
                 <div class="card-body">
                     <div class="d-flex justify-content-between align-items-start mb-2">
                         <h5 class="card-title mb-0">
@@ -111,39 +112,40 @@
                                th:text="${goal.title}">Hedef</a>
                         </h5>
                         <span class="badge"
-                              th:classappend="${goal.status.name() == 'ACTIVE' ? 'bg-success' : goal.status.name() == 'PAUSED' ? 'bg-warning text-dark' : goal.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary'}"
+                              th:classappend="${goal.status.name() == 'ACTIVE' ? 'badge-emerald' : goal.status.name() == 'PAUSED' ? 'badge-amber' : goal.status.name() == 'COMPLETED' ? 'badge-cyan' : 'badge-glass'}"
                               th:text="${goal.status.name() == 'ACTIVE' ? 'Aktif' : goal.status.name() == 'PAUSED' ? 'Duraklatıldı' : goal.status.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'}">Status</span>
                     </div>
 
                     <!-- Category Badge -->
-                    <span th:if="${goal.category != null}" class="badge bg-light text-dark mb-2"
+                    <span th:if="${goal.category != null}" class="badge badge-glass mb-2"
                           th:text="${goal.category}">Kategori</span>
 
                     <!-- Progress Bar -->
                     <div class="mb-2">
-                        <div class="d-flex justify-content-between small text-muted mb-1">
-                            <span th:text="${goal.unit}">birim</span>
-                            <span th:text="${goal.completionPct != null ? goal.completionPct + '%' : '0%'}">0%</span>
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span style="color: var(--text-muted);" th:text="${goal.unit}">birim</span>
+                            <span class="mono" th:text="${goal.completionPct != null ? goal.completionPct + '%' : '0%'}">0%</span>
                         </div>
                         <div class="progress" style="height: 8px;">
                             <div class="progress-bar"
-                                 th:classappend="${goal.completionPct != null && goal.completionPct.intValue() >= 100 ? 'bg-success' : goal.completionPct != null && goal.completionPct.intValue() >= 50 ? 'bg-primary' : 'bg-warning'}"
+                                 th:classappend="${goal.completionPct != null && goal.completionPct.intValue() >= 100 ? 'progress-bar-emerald' : goal.completionPct != null && goal.completionPct.intValue() >= 50 ? 'progress-bar-cyan' : 'progress-bar-amber'}"
                                  role="progressbar"
                                  th:style="'width: ' + (${goal.completionPct} ?: 0) + '%'"
                                  th:attr="aria-valuenow=${goal.completionPct ?: 0}"
-                                 aria-valuemin="0" aria-valuemax="100">
+                                 aria-valuemin="0" aria-valuemax="100"
+                                 data-animate>
                             </div>
                         </div>
                     </div>
 
                     <!-- Footer info -->
-                    <div class="d-flex justify-content-between align-items-center small text-muted mt-3">
-                        <span>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <span class="countdown-chip" th:classappend="${goal.daysLeft <= 0 ? 'urgent' : (goal.daysLeft < 7 ? 'urgent' : '')}">
                             <i class="bi bi-calendar-event me-1"></i>
                             <span th:text="${goal.daysLeft > 0 ? goal.daysLeft + ' gün kaldı' : 'Süre doldu'}">gün kaldı</span>
                         </span>
-                        <span th:if="${goal.currentStreak > 0}">
-                            <i class="bi bi-fire me-1 text-danger"></i>
+                        <span th:if="${goal.currentStreak > 0}" class="streak-badge">
+                            <i class="bi bi-fire"></i>
                             <span th:text="${goal.currentStreak + ' gün'}">streak</span>
                         </span>
                     </div>

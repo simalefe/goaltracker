@@ -76,18 +76,20 @@
         if (!listEl) return;
 
         if (notifications.length === 0) {
-            listEl.innerHTML = '<div class="text-center py-3 text-muted"><i class="bi bi-bell-slash"></i> Bildirim yok</div>';
+            listEl.innerHTML = '<div class="text-center py-3" style="color: #475569;"><i class="bi bi-bell-slash"></i> Bildirim yok</div>';
             return;
         }
 
         var html = '';
         notifications.forEach(function (n) {
-            var readClass = n.read ? '' : 'bg-light';
+            var readClass = n.read ? '' : 'border-start border-2';
+            var readStyle = n.read ? '' : 'background: rgba(0,212,255,0.04); border-left-color: #00D4FF !important;';
             var iconClass = getIconClass(n.type);
             var colorClass = getColorClass(n.type);
             var timeStr = formatRelativeTime(n.createdAt);
 
-            html += '<a href="/notifications" class="dropdown-item d-flex align-items-start gap-2 py-2 border-bottom ' + readClass + '" ' +
+            html += '<a href="/notifications" class="dropdown-item d-flex align-items-start gap-2 py-2 ' + readClass + '" ' +
+                    'style="' + readStyle + ' border-bottom: 1px solid rgba(255,255,255,0.08);" ' +
                     'onclick="markNotificationRead(' + n.id + ')">' +
                     '<i class="bi ' + iconClass + ' ' + colorClass + ' mt-1"></i>' +
                     '<div class="flex-grow-1">' +

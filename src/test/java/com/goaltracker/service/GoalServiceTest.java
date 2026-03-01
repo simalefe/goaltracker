@@ -175,7 +175,7 @@ class GoalServiceTest {
         void shouldReturnFilteredPagedGoals() {
             Pageable pageable = PageRequest.of(0, 10);
             Page<Goal> page = new PageImpl<>(List.of(testGoal), pageable, 1);
-            given(goalRepository.findByFilters(eq(1L), eq(GoalStatus.ACTIVE), isNull(), isNull(), isNull(), any()))
+            given(goalRepository.findByFilters(eq(1L), eq(GoalStatus.ACTIVE.name()), isNull(), isNull(), isNull(), any()))
                     .willReturn(page);
 
             Page<GoalSummaryResponse> result = goalService.getGoals(1L, GoalStatus.ACTIVE, null, null, null, pageable);

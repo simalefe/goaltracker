@@ -31,11 +31,11 @@ public enum ErrorCode {
 
     // Social
     SELF_FRIEND_REQUEST(HttpStatus.BAD_REQUEST, "Kendinize arkadaşlık isteği gönderemezsiniz."),
-    ALREADY_FRIENDS(HttpStatus.CONFLICT, "Zaten arkadaşsınız."),
-    REQUEST_ALREADY_SENT(HttpStatus.CONFLICT, "Zaten bekleyen bir istek var."),
+    ALREADY_FRIENDS(HttpStatus.BAD_REQUEST, "Zaten arkadaşsınız."),
+    REQUEST_ALREADY_SENT(HttpStatus.BAD_REQUEST, "Zaten bekleyen bir istek var."),
     FRIENDSHIP_NOT_FOUND(HttpStatus.NOT_FOUND, "Arkadaşlık isteği bulunamadı."),
-    NOT_FRIENDS(HttpStatus.FORBIDDEN, "Bu kullanıcıyla arkadaş değilsiniz."),
-    SHARE_ALREADY_EXISTS(HttpStatus.CONFLICT, "Bu hedef zaten bu kullanıcıyla paylaşılmış."),
+    NOT_FRIENDS(HttpStatus.BAD_REQUEST, "Bu kullanıcıyla arkadaş değilsiniz."),
+    SHARE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "Bu hedef zaten bu kullanıcıyla paylaşılmış."),
     SHARE_NOT_FOUND(HttpStatus.NOT_FOUND, "Paylaşım bulunamadı."),
     USER_BLOCKED(HttpStatus.FORBIDDEN, "Bu kullanıcı engellenmiş."),
 

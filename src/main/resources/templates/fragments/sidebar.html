@@ -1,51 +1,50 @@
 <!-- Sidebar Fragment -->
 <nav th:fragment="sidebar" id="sidebarMenu"
-     class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+     class="col-md-3 col-lg-2 d-md-block sidebar collapse" aria-label="Yan menü">
     <div class="position-sticky pt-3 sidebar-sticky">
         <ul class="nav flex-column">
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activePage == 'dashboard' ? 'active' : ''}"
-                   th:href="@{/dashboard}">
+                   th:href="@{/dashboard}" aria-label="Dashboard">
                     <i class="bi bi-speedometer2 me-2"></i>Dashboard
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activePage == 'goals' ? 'active' : ''}"
-                   th:href="@{/goals}">
+                   th:href="@{/goals}" aria-label="Hedefler">
                     <i class="bi bi-bullseye me-2"></i>Hedefler
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activePage == 'social' ? 'active' : ''}"
-                   th:href="@{/social}">
+                   th:href="@{/social}" aria-label="Sosyal">
                     <i class="bi bi-people me-2"></i>Sosyal
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activePage == 'notifications' ? 'active' : ''}"
-                   th:href="@{/notifications}">
+                   th:href="@{/notifications}" aria-label="Bildirimler">
                     <i class="bi bi-bell me-2"></i>Bildirimler
                 </a>
             </li>
         </ul>
 
-        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+        <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1">
             <span>Hesap</span>
         </h6>
         <ul class="nav flex-column mb-2">
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activePage == 'profile' ? 'active' : ''}"
-                   th:href="@{/profile}">
+                   th:href="@{/profile}" aria-label="Profil">
                     <i class="bi bi-person me-2"></i>Profil
                 </a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" th:classappend="${activePage == 'settings' ? 'active' : ''}"
-                   th:href="@{/settings}">
+                   th:href="@{/settings/notifications}" aria-label="Ayarlar">
                     <i class="bi bi-gear me-2"></i>Ayarlar
                 </a>
             </li>
         </ul>
     </div>
 </nav>
-

@@ -3,12 +3,12 @@
 # =============================================
 
 spring:
-  # ---- DataSource (H2 File-Based for production) ----
+  # ---- DataSource (PostgreSQL) ----
   datasource:
-    url: ${DATABASE_URL:jdbc:h2:file:./data/goaltracker;DB_CLOSE_ON_EXIT=FALSE}
-    driver-class-name: org.h2.Driver
-    username: ${DATABASE_USERNAME:sa}
-    password: ${DATABASE_PASSWORD:}
+    url: ${DATABASE_URL:jdbc:postgresql://localhost:5432/goaltracker}
+    driver-class-name: org.postgresql.Driver
+    username: ${DATABASE_USERNAME:postgres}
+    password: "samet127"
 
   # ---- JPA / Hibernate ----
   jpa:
@@ -19,11 +19,7 @@ spring:
     properties:
       hibernate:
         format_sql: false
-
-  # ---- H2 Console — DISABLED in production ----
-  h2:
-    console:
-      enabled: false
+        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   # ---- Thymeleaf — cache enabled ----
   thymeleaf:
@@ -40,10 +36,6 @@ spring:
       cache:
         period: 604800
 
-  # ---- Flyway ----
-  flyway:
-    enabled: true
-    baseline-on-migrate: false
 
 # ---- Server ----
 server:
@@ -63,7 +55,12 @@ management:
   endpoint:
     health:
       show-details: when-authorized
-
+  health:
+    mail:
+      enabled: false
+# Bu ayar, mail health check'ini tamamen devre dışı bırakır.
+# Mail özelliği gerçekten kullanıma hazır olduğunda (ortam değişkenleri MAIL_HOST,
+# MAIL_USERNAME, MAIL_PASSWORD doğru şekilde ayarlandığında) bu satırı true yaparak yeniden etkinleştirebilirsiniz.
 # ---- Logging — production levels ----
 logging:
   level:
@@ -71,7 +68,6 @@ logging:
     com.goaltracker: WARN
     org.hibernate.SQL: WARN
     org.springframework.web: WARN
-    org.flywaydb: INFO
 
 # ---- JWT — MUST use env variable, no hardcoded secret ----
 jwt:

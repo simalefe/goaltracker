@@ -80,10 +80,18 @@ public class GoalServiceImpl implements GoalService {
                                                GoalType goalType, String query, Pageable pageable) {
         // Max page size limiti
         int size = Math.min(pageable.getPageSize(), MAX_PAGE_SIZE);
-        Sort sort = pageable.getSort().isSorted() ? pageable.getSort() : Sort.by(Sort.Direction.DESC, "createdAt");
+        Sort sort = pageable.getSort().isSorted()
+                ? normalizeSort(pageable.getSort())
+                : Sort.by(Sort.Direction.DESC, "created_at");
         Pageable limitedPageable = PageRequest.of(pageable.getPageNumber(), size, sort);
 
-        Page<Goal> page = goalRepository.findByFilters(userId, status, category, goalType, query, limitedPageable);
+        Page<Goal> page = goalRepository.findByFilters(
+                userId,
+                status != null ? status.name() : null,
+                category != null ? category.name() : null,
+                goalType != null ? goalType.name() : null,
+                query,
+                limitedPageable);
         return page.map(g -> enrichSummaryResponse(GoalMapper.toSummaryResponse(g), g));
     }
 
@@ -167,6 +175,28 @@ public class GoalServiceImpl implements GoalService {
             throw new GoalAccessDeniedException(goalId);
         }
         return goal;
+    }
+
+    /**
+     * Native SQL sorgularında kullanılmak üzere Sort içindeki Java camelCase alan adlarını
+     * PostgreSQL kolon adlarına (snake_case) dönüştürür.
+     */
+    private Sort normalizeSort(Sort sort) {
+        return Sort.by(
+                sort.stream()
+                        .map(order -> order.withProperty(toDbColumnName(order.getProperty())))
+                        .toList()
+        );
+    }
+
+    private String toDbColumnName(String javaFieldName) {
+        return switch (javaFieldName) {
+            case "createdAt"  -> "created_at";
+            case "updatedAt"  -> "updated_at";
+            case "targetDate" -> "target_date";
+            case "goalType"   -> "goal_type";
+            default           -> javaFieldName;
+        };
     }
 }
 

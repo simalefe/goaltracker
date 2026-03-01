@@ -170,7 +170,7 @@ class DashboardServiceTest {
             given(goalRepository.findByUserIdAndStatus(1L, GoalStatus.ACTIVE))
                     .willReturn(List.of(goal1));
             given(goalEntryRepository.sumByGoalIds(List.of(10L)))
-                    .willReturn(List.of(new Object[]{10L, new BigDecimal("100.00")}));
+                    .willReturn(List.<Object[]>of(new Object[]{10L, new BigDecimal("100.00")}));
             given(goalEntryRepository.countDistinctGoalsByUserIdAndEntryDate(eq(1L), any(LocalDate.class)))
                     .willReturn(2);
             given(goalCalculator.calculatePlannedProgress(eq(goal1), any(LocalDate.class)))
@@ -226,7 +226,7 @@ class DashboardServiceTest {
             given(goalRepository.findByUserIdAndStatus(1L, GoalStatus.ACTIVE))
                     .willReturn(List.of(goal1));
             given(goalEntryRepository.sumByGoalIds(List.of(10L)))
-                    .willReturn(List.of(new Object[]{10L, new BigDecimal("100.00")}));
+                    .willReturn(List.<Object[]>of(new Object[]{10L, new BigDecimal("100.00")}));
             given(goalEntryRepository.countDistinctGoalsByUserIdAndEntryDate(eq(1L), any(LocalDate.class)))
                     .willReturn(1);
             given(goalCalculator.calculatePlannedProgress(eq(goal1), any(LocalDate.class)))
@@ -251,7 +251,7 @@ class DashboardServiceTest {
             given(goalRepository.findByUserIdAndStatus(1L, GoalStatus.ACTIVE))
                     .willReturn(List.of(goal1));
             given(goalEntryRepository.sumByGoalIds(List.of(10L)))
-                    .willReturn(List.of(new Object[]{10L, new BigDecimal("100.00")}));
+                    .willReturn(List.<Object[]>of(new Object[]{10L, new BigDecimal("100.00")}));
             given(goalEntryRepository.countDistinctGoalsByUserIdAndEntryDate(eq(1L), any(LocalDate.class)))
                     .willReturn(0);
             given(goalCalculator.calculatePlannedProgress(eq(goal1), any(LocalDate.class)))

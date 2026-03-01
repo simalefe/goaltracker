@@ -104,7 +104,7 @@ public class AuthService {
         return new AuthResponse(accessToken, UserMapper.toResponse(user));
     }
 
-    @Transactional
+    @Transactional(noRollbackFor = InvalidCredentialsException.class)
     public AuthResponse login(LoginRequest request, HttpServletResponse response) {
         User user = userRepository.findByEmail(request.email())
                 .orElseThrow(InvalidCredentialsException::new);

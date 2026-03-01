@@ -47,14 +47,14 @@ public class GoalViewController {
             @RequestParam(value = "query", required = false) String query,
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "size", defaultValue = "12") int size,
-            @RequestParam(value = "sort", defaultValue = "createdAt,desc") String sort,
+            @RequestParam(value = "sort", defaultValue = "created_at,desc") String sort,
             Model model) {
 
         Long userId = securityUtils.getCurrentUserId();
 
-        // Parse sort parameter
+        // Parse sort parameter — native SQL kullandığımız için DB kolon adına (snake_case) map et
         String[] sortParts = sort.split(",");
-        String sortField = sortParts[0];
+        String sortField = toDbColumnName(sortParts[0]);
         Sort.Direction direction = sortParts.length > 1 && sortParts[1].equalsIgnoreCase("asc")
                 ? Sort.Direction.ASC : Sort.Direction.DESC;
         Pageable pageable = PageRequest.of(page, Math.min(size, 50), Sort.by(direction, sortField));
@@ -243,6 +243,20 @@ public class GoalViewController {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }
         return "redirect:/goals/" + goalId;
+    }
+
+    /**
+     * Native SQL sorgularında kullanılmak üzere Java camelCase alan adlarını
+     * PostgreSQL kolon adlarına (snake_case) dönüştürür.
+     */
+    private String toDbColumnName(String javaFieldName) {
+        return switch (javaFieldName) {
+            case "createdAt"  -> "created_at";
+            case "updatedAt"  -> "updated_at";
+            case "targetDate" -> "target_date";
+            case "goalType"   -> "goal_type";
+            default           -> javaFieldName; // zaten snake_case ise olduğu gibi döndür
+        };
     }
 }
 

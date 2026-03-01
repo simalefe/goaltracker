@@ -98,7 +98,7 @@ public class FriendshipService {
 
         // Only receiver can accept
         if (!friendship.getReceiver().getId().equals(currentUserId)) {
-            throw new FriendshipException(ErrorCode.FORBIDDEN,
+            throw new FriendshipException(ErrorCode.BAD_REQUEST,
                     "Sadece alıcı arkadaşlık isteğini kabul edebilir.");
         }
 

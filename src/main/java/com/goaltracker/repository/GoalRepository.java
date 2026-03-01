@@ -1,9 +1,7 @@
 package com.goaltracker.repository;
 
 import com.goaltracker.model.Goal;
-import com.goaltracker.model.enums.GoalCategory;
 import com.goaltracker.model.enums.GoalStatus;
-import com.goaltracker.model.enums.GoalType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -24,15 +22,21 @@ public interface GoalRepository extends JpaRepository<Goal, Long> {
     @Query("SELECT g FROM Goal g WHERE g.user.id = :userId AND g.status = :status ORDER BY g.createdAt DESC")
     List<Goal> findByUserIdAndStatusOrderByCreatedAtDesc(@Param("userId") Long userId, @Param("status") GoalStatus status);
 
-    @Query("SELECT g FROM Goal g WHERE g.user.id = :userId " +
-            "AND (:status IS NULL OR g.status = :status) " +
-            "AND (:category IS NULL OR g.category = :category) " +
-            "AND (:goalType IS NULL OR g.goalType = :goalType) " +
-            "AND (:query IS NULL OR LOWER(g.title) LIKE LOWER(CONCAT('%', :query, '%')))")
+    @Query(value = "SELECT * FROM goals g WHERE g.user_id = :userId " +
+            "AND (CAST(:status AS text) IS NULL OR g.status = :status) " +
+            "AND (CAST(:category AS text) IS NULL OR g.category = :category) " +
+            "AND (CAST(:goalType AS text) IS NULL OR g.goal_type = :goalType) " +
+            "AND (CAST(:query AS text) IS NULL OR LOWER(g.title) LIKE LOWER(CONCAT('%', :query, '%')))",
+            countQuery = "SELECT COUNT(*) FROM goals g WHERE g.user_id = :userId " +
+            "AND (CAST(:status AS text) IS NULL OR g.status = :status) " +
+            "AND (CAST(:category AS text) IS NULL OR g.category = :category) " +
+            "AND (CAST(:goalType AS text) IS NULL OR g.goal_type = :goalType) " +
+            "AND (CAST(:query AS text) IS NULL OR LOWER(g.title) LIKE LOWER(CONCAT('%', :query, '%')))",
+            nativeQuery = true)
     Page<Goal> findByFilters(@Param("userId") Long userId,
-                             @Param("status") GoalStatus status,
-                             @Param("category") GoalCategory category,
-                             @Param("goalType") GoalType goalType,
+                             @Param("status") String status,
+                             @Param("category") String category,
+                             @Param("goalType") String goalType,
                              @Param("query") String query,
                              Pageable pageable);
 

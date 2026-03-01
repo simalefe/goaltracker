@@ -20,6 +20,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     List<Notification> findByUserIdAndIsReadFalse(Long userId);
 
+    @Query("SELECT n FROM Notification n JOIN FETCH n.user")
+    List<Notification> findAllWithUsers();
+
     @Query("SELECT n FROM Notification n WHERE n.scheduledAt <= :now AND n.sentAt IS NULL")
     List<Notification> findPendingNotifications(@Param("now") Instant now);
 

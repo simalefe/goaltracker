@@ -7,16 +7,16 @@
 </head>
 <body>
 <main layout:fragment="content">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="page-header">
         <div>
-            <h2><i class="bi bi-bell me-2"></i>Bildirimler</h2>
-            <p class="text-muted mb-0" th:if="${unreadCount > 0}">
-                <span th:text="${unreadCount}">0</span> okunmamış bildirim
+            <h2 class="mb-0"><i class="bi bi-bell me-2" style="color: var(--accent-cyan);"></i>Bildirimler</h2>
+            <p style="color: var(--text-muted); margin: 0.25rem 0 0;" th:if="${unreadCount > 0}">
+                <span class="mono" th:text="${unreadCount}">0</span> okunmamış bildirim
             </p>
         </div>
         <div class="d-flex gap-2">
             <form th:action="@{/notifications/read-all}" method="post" th:if="${unreadCount > 0}">
-                <button type="submit" class="btn btn-outline-primary btn-sm">
+                <button type="submit" class="btn btn-ghost btn-sm">
                     <i class="bi bi-check-all me-1"></i>Tümünü Okundu İşaretle
                 </button>
             </form>
@@ -26,43 +26,46 @@
         </div>
     </div>
 
-    <!-- Type Filter -->
-    <div class="card mb-4">
-        <div class="card-body py-2">
-            <form th:action="@{/notifications}" method="get" class="d-flex align-items-center gap-3">
-                <label for="typeFilter" class="form-label mb-0 fw-bold">Filtre:</label>
-                <select id="typeFilter" name="type" class="form-select form-select-sm" style="max-width: 250px;"
-                        onchange="this.form.submit()">
-                    <option value="">Tümü</option>
-                    <option th:each="t : ${notificationTypes}" th:value="${t}" th:text="${t.name()}"
-                            th:selected="${currentType != null && currentType == t}">TYPE</option>
-                </select>
-            </form>
-        </div>
+    <!-- Type Filter — Chip style -->
+    <div class="mb-4 animate-fade-in stagger-1">
+        <form th:action="@{/notifications}" method="get" class="d-flex align-items-center gap-3">
+            <label for="typeFilter" class="form-label mb-0 fw-bold" style="color: var(--text-secondary);">Filtre:</label>
+            <div class="filter-chips">
+                <a th:href="@{/notifications}" class="filter-chip"
+                   th:classappend="${currentType == null ? 'active' : ''}">Tümü</a>
+                <a th:each="t : ${notificationTypes}"
+                   th:href="@{/notifications(type=${t.name()})}"
+                   class="filter-chip"
+                   th:classappend="${currentType != null && currentType == t ? 'active' : ''}"
+                   th:text="${t.name()}">TYPE</a>
+            </div>
+        </form>
     </div>
 
     <!-- Notifications List -->
-    <div class="list-group" th:if="${notifications != null && !notifications.empty}">
+    <div class="card animate-fade-in stagger-2" th:if="${notifications != null && !notifications.empty}">
         <div th:each="notification : ${notifications.content}"
-             class="list-group-item list-group-item-action d-flex align-items-start gap-3"
-             th:classappend="${!notification.read ? 'list-group-item-light border-start border-primary border-3' : ''}">
+             class="notification-item"
+             th:classappend="${!notification.read ? 'unread' : ''}">
             <!-- Icon -->
-            <div class="flex-shrink-0 mt-1">
-                <i class="bi fs-4" th:class="'bi fs-4 ' + ${notification.iconClass} + ' ' + ${notification.colorClass}"></i>
+            <div class="notification-icon"
+                 th:classappend="${notification.type.name() == 'DAILY_REMINDER' ? 'notif-daily' : notification.type.name() == 'STREAK_DANGER' ? 'notif-streak-danger' : notification.type.name() == 'STREAK_LOST' ? 'notif-streak-lost' : notification.type.name() == 'BADGE_EARNED' ? 'notif-badge' : notification.type.name() == 'GOAL_COMPLETED' ? 'notif-goal' : notification.type.name() == 'WEEKLY_SUMMARY' ? 'notif-weekly' : notification.type.name() == 'FRIEND_ACTIVITY' ? 'notif-friend' : 'notif-daily'}">
+                <i class="bi" th:class="'bi ' + ${notification.iconClass}"></i>
             </div>
             <!-- Content -->
             <div class="flex-grow-1">
                 <div class="d-flex justify-content-between align-items-start">
                     <h6 class="mb-1" th:classappend="${!notification.read ? 'fw-bold' : ''}"
-                        th:text="${notification.title}">Bildirim Başlığı</h6>
-                    <small class="text-muted text-nowrap ms-2" th:text="${notification.formattedTime}">01 Oca 2026 20:00</small>
+                        th:text="${notification.title}" style="font-size: 0.95rem;">Bildirim Başlığı</h6>
+                    <small style="color: var(--text-muted); white-space: nowrap;" class="ms-2 mono"
+                           th:text="${notification.formattedTime}">01 Oca 2026 20:00</small>
                 </div>
-                <p class="mb-1 text-muted small" th:text="${notification.message}">Bildirim mesajı</p>
-                <div class="d-flex gap-2 mt-1">
-                    <span class="badge bg-secondary" th:text="${notification.type.name()}">TIP</span>
+                <p class="mb-1 small" style="color: var(--text-secondary);" th:text="${notification.message}">Bildirim mesajı</p>
+                <div class="d-flex gap-2 mt-1 align-items-center">
+                    <span class="badge badge-glass" th:text="${notification.type.name()}">TIP</span>
                     <form th:action="@{/notifications/{id}/read(id=${notification.id})}" method="post"
                           th:if="${!notification.read}" class="d-inline">
-                        <button type="submit" class="btn btn-link btn-sm p-0 text-decoration-none">
+                        <button type="submit" class="btn btn-link btn-sm p-0 text-decoration-none" style="font-size: 0.8rem;">
                             <i class="bi bi-check2 me-1"></i>Okundu İşaretle
                         </button>
                     </form>
@@ -72,9 +75,10 @@
     </div>
 
     <!-- Empty State -->
-    <div th:if="${notifications == null || notifications.empty}" class="text-center py-5">
-        <i class="bi bi-bell-slash fs-1 text-muted"></i>
-        <p class="text-muted mt-2">Henüz bildiriminiz yok.</p>
+    <div th:if="${notifications == null || notifications.empty}" class="empty-state animate-fade-in stagger-2">
+        <i class="bi bi-bell-slash empty-icon"></i>
+        <h4>Bildiriminiz yok</h4>
+        <p>Yeni bildirimler geldiğinde burada görünecek.</p>
     </div>
 
     <!-- Pagination -->

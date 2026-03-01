@@ -1,0 +1,63 @@
+# =============================================
+# GoalTracker Pro — E2E Test Profile Configuration
+# =============================================
+
+spring:
+  application:
+    name: goaltracker-e2e
+
+  datasource:
+    url: jdbc:tc:postgresql:16:///goaltrackertest
+    driver-class-name: org.testcontainers.jdbc.ContainerDatabaseDriver
+    username: test
+    password: test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  thymeleaf:
+    cache: false
+
+  mail:
+    host: localhost
+    port: 25
+    username: test
+    password: test
+
+  task:
+    execution:
+      pool:
+        core-size: 1
+
+# JWT — long expiration for E2E tests
+jwt:
+  secret: e2eTestSecretKeyAtLeast256BitsLongForHS256AlgorithmGoalTracker2026E2E
+  access-expiration: 3600000
+  refresh-expiration: 86400000
+
+# App
+app:
+  base-url: http://localhost:8080
+
+# E2E specific configuration
+e2e:
+  browser: chrome
+  headless: true
+  timeout:
+    implicit: 5
+    explicit: 10
+    page-load: 30
+
+# Logging
+logging:
+  level:
+    root: WARN
+    com.goaltracker: INFO
+    org.springframework.web: WARN
+

@@ -44,7 +44,7 @@ public class GoalCalculator {
             return goal.getTargetValue().multiply(BigDecimal.valueOf(elapsedPeriods));
         }
 
-        // DAILY / CUMULATIVE
+        // DAILY / CUMULATIVE / AT_LEAST / AT_MOST
         long daysSinceStart = ChronoUnit.DAYS.between(goal.getStartDate(), asOfDate) + 1;
         daysSinceStart = Math.max(0, Math.min(daysSinceStart, totalDays));
 
@@ -188,6 +188,7 @@ public class GoalCalculator {
                 long elapsed = calculateElapsedPeriods(goal, date);
                 planned = goal.getTargetValue().multiply(BigDecimal.valueOf(elapsed));
             } else {
+                // DAILY / CUMULATIVE / AT_LEAST / AT_MOST
                 planned = goal.getTargetValue()
                         .multiply(BigDecimal.valueOf(dayIndex))
                         .divide(BigDecimal.valueOf(totalDays), 2, RoundingMode.HALF_UP);

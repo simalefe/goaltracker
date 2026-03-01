@@ -7,45 +7,43 @@
 </head>
 <body>
 <main layout:fragment="content">
-    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
-        <h1 class="h2"><i class="bi bi-search me-2"></i>Kullanıcı Ara</h1>
+    <div class="page-header">
+        <h1 class="h2"><i class="bi bi-search me-2" style="color: var(--accent-cyan);"></i>Kullanıcı Ara</h1>
     </div>
 
     <!-- Search Form -->
-    <div class="card mb-4">
+    <div class="card mb-4 animate-fade-in stagger-1">
         <div class="card-body">
-            <form th:action="@{/social/search}" method="get" class="row g-2 align-items-end">
-                <div class="col-auto flex-grow-1">
+            <form th:action="@{/social/search}" method="get" class="d-flex gap-2 align-items-end">
+                <div class="flex-grow-1">
                     <label for="searchQuery" class="form-label">Kullanıcı Adı</label>
                     <input type="text" class="form-control" id="searchQuery" name="query"
-                           placeholder="Aramak istediğiniz kullanıcı adını girin..." required>
+                           placeholder="Aramak istediğiniz kullanıcı adını girin..." required
+                           aria-label="Kullanıcı ara">
                 </div>
-                <div class="col-auto">
-                    <button type="submit" class="btn btn-primary">
-                        <i class="bi bi-search me-1"></i>Ara
-                    </button>
-                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>Ara
+                </button>
             </form>
         </div>
     </div>
 
     <!-- Search Results -->
-    <div class="card" th:if="${searchResults != null}">
+    <div class="card animate-fade-in stagger-2" th:if="${searchResults != null}">
         <div class="card-header">
-            <i class="bi bi-people me-2"></i>Arama Sonuçları
+            <i class="bi bi-people me-2" style="color: var(--accent-indigo);"></i>Arama Sonuçları
         </div>
-        <div class="list-group list-group-flush" th:if="${!searchResults.isEmpty()}">
-            <div th:each="user : ${searchResults}" class="list-group-item d-flex justify-content-between align-items-center">
-                <div class="d-flex align-items-center">
-                    <div class="rounded-circle bg-primary text-white d-flex align-items-center justify-content-center me-3"
-                         style="width: 40px; height: 40px;">
-                        <i class="bi bi-person-fill" th:if="${user.avatarUrl() == null}"></i>
-                        <img th:if="${user.avatarUrl() != null}" th:src="${user.avatarUrl()}"
-                             class="rounded-circle" style="width: 40px; height: 40px;" alt="Avatar">
+        <div th:if="${!searchResults.isEmpty()}">
+            <div th:each="user : ${searchResults}" class="friend-item">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-circle avatar-cyan" th:if="${user.avatarUrl() == null}">
+                        <span th:text="${user.username().substring(0,1).toUpperCase()}">U</span>
                     </div>
+                    <img th:if="${user.avatarUrl() != null}" th:src="${user.avatarUrl()}"
+                         class="avatar-circle" style="object-fit: cover;" alt="Avatar">
                     <div>
                         <strong th:text="${user.displayName() != null ? user.displayName() : user.username()}"></strong>
-                        <span class="text-muted ms-1" th:text="'@' + ${user.username()}"></span>
+                        <span style="color: var(--text-muted);" class="ms-1" th:text="'@' + ${user.username()}"></span>
                     </div>
                 </div>
                 <form th:action="@{/social/friends/request}" method="post">
@@ -56,9 +54,11 @@
                 </form>
             </div>
         </div>
-        <div class="card-body text-center text-muted" th:if="${searchResults.isEmpty()}">
-            <i class="bi bi-search fs-1 d-block mb-2"></i>
-            <p>Kullanıcı bulunamadı.</p>
+        <div class="card-body" th:if="${searchResults.isEmpty()}">
+            <div class="empty-state">
+                <i class="bi bi-search empty-icon"></i>
+                <p>Kullanıcı bulunamadı.</p>
+            </div>
         </div>
     </div>
 

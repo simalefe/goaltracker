@@ -1,4 +1,4 @@
-﻿package com.goaltracker.model.event;
+package com.goaltracker.model.event;
 import org.springframework.context.ApplicationEvent;
 import java.time.LocalDate;
 public class GoalEntryDeletedEvent extends ApplicationEvent {

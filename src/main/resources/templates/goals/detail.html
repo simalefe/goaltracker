@@ -14,8 +14,8 @@
                  th:style="'width:12px; height:12px; border-radius:50%; background:' + ${goal.color}"></div>
             <h1 class="h2 mb-0" th:text="${goal.title}">Hedef</h1>
             <span class="badge ms-3"
-                  th:classappend="${goal.status.name() == 'ACTIVE' ? 'bg-success' : goal.status.name() == 'PAUSED' ? 'bg-warning text-dark' : goal.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary'}"
-                  th:text="${goal.status.name() == 'ACTIVE' ? 'Aktif' : goal.status.name() == 'PAUSED' ? 'Duraklatıldı' : goal.status.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'}">Status</span>
+                  th:classappend="${goal.status.name() == 'ACTIVE' ? 'bg-success' : (goal.status.name() == 'PAUSED' ? 'bg-warning text-dark' : (goal.status.name() == 'COMPLETED' ? 'bg-primary' : 'bg-secondary'))}"
+                  th:text="${goal.status.name() == 'ACTIVE' ? 'Aktif' : (goal.status.name() == 'PAUSED' ? 'Duraklatıldı' : (goal.status.name() == 'COMPLETED' ? 'Tamamlandı' : 'Arşivlendi'))}">Status</span>
         </div>
         <div class="d-flex gap-2">
             <!-- Export Buttons -->
@@ -123,7 +123,7 @@
                         <div class="card-body py-3">
                             <div class="text-muted small">Fark</div>
                             <div class="h5 mb-0"
-                                 th:classappend="${stats.gap.signum() > 0 ? 'text-success' : stats.gap.signum() < 0 ? 'text-danger' : 'text-primary'}">
+                                 th:classappend="${stats.gap.signum() > 0 ? 'text-success' : (stats.gap.signum() < 0 ? 'text-danger' : 'text-primary')}">
                                 <span th:if="${stats.gap.signum() > 0}">+</span>
                                 <span th:text="${stats.gap}">0</span>
                             </div>
@@ -189,7 +189,7 @@
                     <h6 class="card-subtitle mb-3 text-muted">İlerleme Çubuğu</h6>
                     <div class="progress" style="height: 24px;">
                         <div class="progress-bar progress-bar-striped"
-                             th:classappend="${stats.completionPct.intValue() >= 100 ? 'bg-success' : stats.trackingStatus == 'BEHIND' ? 'bg-warning' : 'bg-primary'}"
+                             th:classappend="${stats.completionPct.intValue() >= 100 ? 'bg-success' : (stats.trackingStatus == 'BEHIND' ? 'bg-warning' : 'bg-primary')}"
                              role="progressbar"
                              th:style="'width: ' + ${stats.completionPct} + '%'"
                              th:text="${stats.completionPct + '%'}">0%</div>
@@ -254,7 +254,7 @@
                                         <dd class="col-6" th:text="${stats.expectedPct() + '%'}">0%</dd>
                                         <dt class="col-6 text-muted">Fark (Gap)</dt>
                                         <dd class="col-6"
-                                            th:classappend="${stats.gap().signum() > 0 ? 'text-success' : stats.gap().signum() < 0 ? 'text-danger' : 'text-primary'}">
+                                            th:classappend="${stats.gap().signum() > 0 ? 'text-success' : (stats.gap().signum() < 0 ? 'text-danger' : 'text-primary')}">
                                             <span th:if="${stats.gap().signum() > 0}">+</span>
                                             <span th:text="${stats.gap()}">0</span>
                                         </dd>
@@ -393,11 +393,11 @@
                     <dl class="row mb-0">
                         <dt class="col-sm-5 text-muted">Tip</dt>
                         <dd class="col-sm-7"
-                            th:text="${goal.goalType.name() == 'DAILY' ? 'Günlük' : goal.goalType.name() == 'CUMULATIVE' ? 'Kümülatif' : 'Oran'}">Tip</dd>
+                            th:text="${goal.goalType.name() == 'DAILY' ? 'Günlük' : (goal.goalType.name() == 'CUMULATIVE' ? 'Kümülatif' : 'Oran')}">Tip</dd>
 
                         <dt class="col-sm-5 text-muted">Frekans</dt>
                         <dd class="col-sm-7"
-                            th:text="${goal.frequency.name() == 'DAILY' ? 'Günlük' : goal.frequency.name() == 'WEEKLY' ? 'Haftalık' : 'Aylık'}">Frekans</dd>
+                            th:text="${goal.frequency.name() == 'DAILY' ? 'Günlük' : (goal.frequency.name() == 'WEEKLY' ? 'Haftalık' : 'Aylık')}">Frekans</dd>
 
                         <dt class="col-sm-5 text-muted">Birim</dt>
                         <dd class="col-sm-7" th:text="${goal.unit}">birim</dd>
@@ -418,7 +418,7 @@
                         <dd class="col-sm-7" th:text="${stats.daysSinceStart}">0</dd>
 
                         <dt class="col-sm-5 text-muted">Oluşturulma</dt>
-                        <dd class="col-sm-7" th:text="${#temporals.format(goal.createdAt, 'dd MMM yyyy')}">tarih</dd>
+                        <dd class="col-sm-7" th:text="${#dates.format(new java.util.Date(goal.createdAt.toEpochMilli()), 'dd MMM yyyy')}">tarih</dd>
                     </dl>
                 </div>
             </div>
@@ -521,15 +521,17 @@
                         </div>
                         <div class="modal-body">
                             <div class="mb-3">
-                                <label class="form-label">
+                                <label class="form-label" th:for="'actualValue-' + ${entry.id()}">
                                     Değer (<span th:text="${goal.unit}">birim</span>)
                                 </label>
                                 <input type="number" class="form-control" name="actualValue"
+                                       th:id="'actualValue-' + ${entry.id()}"
                                        step="0.01" min="0" th:value="${entry.actualValue()}" required>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Not (opsiyonel)</label>
+                                <label class="form-label" th:for="'note-' + ${entry.id()}">Not (opsiyonel)</label>
                                 <textarea class="form-control" name="note" rows="2"
+                                          th:id="'note-' + ${entry.id()}"
                                           maxlength="500" th:text="${entry.note()}"></textarea>
                             </div>
                         </div>
@@ -557,10 +559,10 @@
 
 </main>
 
-<layout:fragment name="scripts">
+<th:block layout:fragment="scripts">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
     <script th:src="@{/js/charts.js}"></script>
-</layout:fragment>
+</th:block>
 </body>
 </html>
 

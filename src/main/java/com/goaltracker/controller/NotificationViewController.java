@@ -105,6 +105,13 @@ public class NotificationViewController {
         return "redirect:/settings/notifications";
     }
 
+    @GetMapping("/settings/appearance")
+    public String appearanceSettings(Model model) {
+        model.addAttribute("pageTitle", "Görünüm Ayarları");
+        model.addAttribute("activePage", "settings");
+        return "settings/appearance";
+    }
+
     // ========================
     // REST API Endpoints
     // ========================

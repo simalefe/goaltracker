@@ -2,6 +2,9 @@ package com.goaltracker.dto.response;
 
 import com.goaltracker.model.enums.NotificationType;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class NotificationResponse {
 
@@ -53,8 +56,8 @@ public class NotificationResponse {
      */
     public String getFormattedTime() {
         if (createdAt == null) return "";
-        java.time.ZonedDateTime zdt = createdAt.atZone(java.time.ZoneId.of("Europe/Istanbul"));
-        return zdt.format(java.time.format.DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"));
+        ZonedDateTime zdt = createdAt.atZone(ZoneId.of("Europe/Istanbul"));
+        return zdt.format(DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm"));
     }
 
     /**
@@ -70,6 +73,7 @@ public class NotificationResponse {
             case GOAL_COMPLETED -> "bi-check-circle";
             case WEEKLY_SUMMARY -> "bi-bar-chart";
             case FRIEND_ACTIVITY -> "bi-people";
+            case FRIEND_REQUEST -> "bi-person-plus";
         };
     }
 
@@ -86,6 +90,7 @@ public class NotificationResponse {
             case GOAL_COMPLETED -> "text-success";
             case WEEKLY_SUMMARY -> "text-primary";
             case FRIEND_ACTIVITY -> "text-secondary";
+            case FRIEND_REQUEST -> "text-primary";
         };
     }
 }

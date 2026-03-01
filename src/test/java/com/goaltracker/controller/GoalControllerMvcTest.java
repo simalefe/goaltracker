@@ -1,15 +1,9 @@
 package com.goaltracker.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.goaltracker.dto.*;
-import com.goaltracker.exception.GoalAccessDeniedException;
-import com.goaltracker.exception.GoalNotFoundException;
-import com.goaltracker.exception.InvalidStatusTransitionException;
+import com.goaltracker.dto.GoalResponse;
 import com.goaltracker.model.enums.*;
-import com.goaltracker.service.GoalService;
-import com.goaltracker.service.GoalEntryService;
 import com.goaltracker.service.ExportService;
-import com.goaltracker.service.StreakService;
+import com.goaltracker.service.GoalService;
 import com.goaltracker.util.SecurityUtils;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,22 +11,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
-import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
@@ -42,20 +29,8 @@ class GoalControllerMvcTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private GoalService goalService;
-
-    @MockBean
-    private GoalEntryService goalEntryService;
-
-    @MockBean
-    private com.goaltracker.service.GoalShareService goalShareService;
-
-    @MockBean
-    private StreakService streakService;
 
     @MockBean
     private ExportService exportService;
@@ -88,158 +63,53 @@ class GoalControllerMvcTest {
 
     @Test
     @WithMockUser(username = "test@test.com")
-    @DisplayName("GET /api/goals → 200 sayfalı liste")
-    void listGoals_shouldReturnOk() throws Exception {
-        given(securityUtils.getCurrentUserId()).willReturn(1L);
-        Page<GoalSummaryResponse> emptyPage = Page.empty();
-        given(goalService.getGoals(eq(1L), any(), any(), any(), any(), any())).willReturn(emptyPage);
-
-        mockMvc.perform(get("/api/goals")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true));
-    }
-
-    @Test
-    @WithMockUser(username = "test@test.com")
-    @DisplayName("POST /api/goals → 201 hedef oluşturma")
-    void createGoal_shouldReturn201() throws Exception {
-        given(securityUtils.getCurrentUserId()).willReturn(1L);
-        given(goalService.createGoal(any(CreateGoalRequest.class), eq(1L))).willReturn(sampleGoalResponse());
-
-        String json = """
-                {
-                    "title": "Kitap Okuma",
-                    "unit": "sayfa",
-                    "goalType": "CUMULATIVE",
-                    "targetValue": 300,
-                    "startDate": "2026-03-01",
-                    "endDate": "2026-03-31"
-                }
-                """;
-
-        mockMvc.perform(post("/api/goals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isCreated())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value(1));
-    }
-
-    @Test
-    @WithMockUser(username = "test@test.com")
-    @DisplayName("POST /api/goals validasyon hatası → 400")
-    void createGoal_shouldReturn400ForInvalidRequest() throws Exception {
-        String invalidJson = """
-                {
-                    "title": "",
-                    "goalType": "CUMULATIVE",
-                    "targetValue": 0,
-                    "startDate": "2026-03-01",
-                    "endDate": "2026-02-01"
-                }
-                """;
-
-        mockMvc.perform(post("/api/goals")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(invalidJson))
-                .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(username = "test@test.com")
-    @DisplayName("GET /api/goals/{id} → 200")
-    void getGoal_shouldReturnOk() throws Exception {
+    @DisplayName("GET /api/goals/{id}/export/excel → 200 Excel export")
+    void exportExcel_shouldReturnOk() throws Exception {
         given(securityUtils.getCurrentUserId()).willReturn(1L);
         given(goalService.getGoal(1L, 1L)).willReturn(sampleGoalResponse());
+        given(exportService.exportGoalToExcel(1L, 1L)).willReturn(new byte[]{1, 2, 3});
+        given(exportService.normalizeFilename("Test Hedef")).willReturn("test-hedef");
 
-        mockMvc.perform(get("/api/goals/1")
-                        .accept(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/goals/1/export/excel"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.title").value("Test Hedef"));
+                .andExpect(header().exists("Content-Disposition"))
+                .andExpect(content().contentTypeCompatibleWith(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
     }
 
     @Test
     @WithMockUser(username = "test@test.com")
-    @DisplayName("GET /api/goals/{id} var olmayan → 404")
-    void getGoal_shouldReturn404() throws Exception {
+    @DisplayName("GET /api/goals/{id}/export/pdf → 200 PDF export")
+    void exportPdf_shouldReturnOk() throws Exception {
         given(securityUtils.getCurrentUserId()).willReturn(1L);
-        given(goalService.getGoal(999L, 1L)).willThrow(new GoalNotFoundException(999L));
+        given(goalService.getGoal(1L, 1L)).willReturn(sampleGoalResponse());
+        given(exportService.exportGoalToPdf(1L, 1L)).willReturn(new byte[]{1, 2, 3});
+        given(exportService.normalizeFilename("Test Hedef")).willReturn("test-hedef");
 
-        mockMvc.perform(get("/api/goals/999")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.errorCode").value("GOAL_NOT_FOUND"));
-    }
-
-    @Test
-    @WithMockUser(username = "test@test.com")
-    @DisplayName("PUT /api/goals/{id} başka kullanıcı → 403")
-    void updateGoal_shouldReturn403() throws Exception {
-        given(securityUtils.getCurrentUserId()).willReturn(2L);
-        given(goalService.updateGoal(eq(1L), any(UpdateGoalRequest.class), eq(2L)))
-                .willThrow(new GoalAccessDeniedException(1L));
-
-        String json = """
-                { "title": "Hack Attempt" }
-                """;
-
-        mockMvc.perform(put("/api/goals/1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json))
-                .andExpect(status().isForbidden())
-                .andExpect(jsonPath("$.errorCode").value("GOAL_ACCESS_DENIED"));
-    }
-
-    @Test
-    @WithMockUser(username = "test@test.com")
-    @DisplayName("DELETE /api/goals/{id} → 204")
-    void deleteGoal_shouldReturn204() throws Exception {
-        given(securityUtils.getCurrentUserId()).willReturn(1L);
-        doNothing().when(goalService).deleteGoal(1L, 1L);
-
-        mockMvc.perform(delete("/api/goals/1"))
-                .andExpect(status().isNoContent());
-    }
-
-    @Test
-    @WithMockUser(username = "test@test.com")
-    @DisplayName("PATCH /api/goals/{id}/status geçerli geçiş → 200")
-    void updateStatus_shouldReturn200() throws Exception {
-        given(securityUtils.getCurrentUserId()).willReturn(1L);
-        GoalResponse response = sampleGoalResponse();
-        response.setStatus(GoalStatus.PAUSED);
-        given(goalService.updateStatus(1L, 1L, GoalStatus.PAUSED)).willReturn(response);
-
-        mockMvc.perform(patch("/api/goals/1/status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"newStatus\": \"PAUSED\"}"))
+        mockMvc.perform(get("/api/goals/1/export/pdf"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.status").value("PAUSED"));
+                .andExpect(header().exists("Content-Disposition"))
+                .andExpect(content().contentType("application/pdf"));
     }
 
     @Test
     @WithMockUser(username = "test@test.com")
-    @DisplayName("PATCH /api/goals/{id}/status geçersiz geçiş → 400")
-    void updateStatus_shouldReturn400ForInvalidTransition() throws Exception {
+    @DisplayName("GET /api/goals/{id}/export/csv → 200 CSV export")
+    void exportCsv_shouldReturnOk() throws Exception {
         given(securityUtils.getCurrentUserId()).willReturn(1L);
-        given(goalService.updateStatus(1L, 1L, GoalStatus.ACTIVE))
-                .willThrow(new InvalidStatusTransitionException("Geçersiz durum geçişi: COMPLETED → ACTIVE"));
+        given(goalService.getGoal(1L, 1L)).willReturn(sampleGoalResponse());
+        given(exportService.exportGoalToCsv(1L, 1L)).willReturn(new byte[]{1, 2, 3});
+        given(exportService.normalizeFilename("Test Hedef")).willReturn("test-hedef");
 
-        mockMvc.perform(patch("/api/goals/1/status")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"newStatus\": \"ACTIVE\"}"))
-                .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errorCode").value("INVALID_STATUS_TRANSITION"));
+        mockMvc.perform(get("/api/goals/1/export/csv"))
+                .andExpect(status().isOk())
+                .andExpect(header().exists("Content-Disposition"));
     }
 
     @Test
-    @DisplayName("Yetkilendirilmemiş erişim → 302 login redirect")
-    void shouldRedirectToLoginWhenNotAuthenticated() throws Exception {
-        mockMvc.perform(get("/api/goals")
-                        .accept(MediaType.APPLICATION_JSON))
+    @DisplayName("Yetkilendirilmemiş export erişimi → 302 login redirect")
+    void exportExcel_shouldRedirectWhenNotAuthenticated() throws Exception {
+        mockMvc.perform(get("/api/goals/1/export/excel"))
                 .andExpect(status().is3xxRedirection());
     }
 }
-

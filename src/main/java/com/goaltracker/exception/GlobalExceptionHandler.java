@@ -108,6 +108,14 @@ public class GlobalExceptionHandler {
         return mav;
     }
 
+    // ---- Rate Limit ----
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ApiResponse<Void>> handleRateLimit(RateLimitExceededException ex) {
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
+                .header("Retry-After", String.valueOf(ex.getRetryAfterSeconds()))
+                .body(ApiResponse.error(ErrorCode.RATE_LIMIT_EXCEEDED.name(), ex.getMessage()));
+    }
+
     // ---- Goal Exceptions ----
     @ExceptionHandler(GoalNotFoundException.class)
     public Object handleGoalNotFound(HttpServletRequest req, GoalNotFoundException ex) {

@@ -24,7 +24,7 @@ public class NotificationSettings {
     @Column(name = "daily_reminder_time", nullable = false)
     private LocalTime dailyReminderTime = LocalTime.of(20, 0);
 
-    @Column(name = "weekly_summary_day", nullable = false)
+    @Column(name = "weekly_summary_day", nullable = false, columnDefinition = "SMALLINT")
     private int weeklySummaryDay = 1;
 
     @Column(name = "weekly_summary_enabled", nullable = false)

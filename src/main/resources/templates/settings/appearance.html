@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/base}">
+<head>
+    <title>Görünüm Ayarları — GoalTracker Pro</title>
+</head>
+<body>
+<main layout:fragment="content">
+    <div class="page-header">
+        <div>
+            <h2 class="mb-0"><i class="bi bi-palette me-2" style="color: var(--accent-cyan);"></i>Görünüm</h2>
+            <p style="color: var(--text-muted); margin: 0.25rem 0 0;">Uygulamanın arka plan rengini ve temasını özelleştirin.</p>
+        </div>
+        <div class="live-preview-badge">
+            <span class="pulse-dot"></span>
+            Canlı Önizleme
+        </div>
+    </div>
+
+    <div class="settings-layout animate-fade-in stagger-1">
+        <!-- Sol: Ayar Kategorileri Navigation -->
+        <div>
+            <div class="card">
+                <div class="card-body p-2">
+                    <nav class="settings-nav">
+                        <a class="nav-link" th:href="@{/profile}" aria-label="Profil Ayarları">
+                            <i class="bi bi-person"></i>Profil
+                        </a>
+                        <a class="nav-link" th:href="@{/settings/notifications}" aria-label="Bildirim Ayarları">
+                            <i class="bi bi-bell"></i>Bildirimler
+                        </a>
+                        <a class="nav-link active" th:href="@{/settings/appearance}" aria-label="Görünüm Ayarları">
+                            <i class="bi bi-palette"></i>Görünüm
+                        </a>
+                        <a class="nav-link disabled" href="#" aria-label="Güvenlik Ayarları">
+                            <i class="bi bi-shield-lock"></i>Güvenlik
+                        </a>
+                    </nav>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sağ: İçerik Alanı -->
+        <div>
+            <div class="card">
+                <!-- Tema Seçimi -->
+                <div class="setting-group">
+                    <h5><i class="bi bi-palette2" style="color: var(--accent-cyan);"></i>Arka Plan Teması</h5>
+                    <p>Bir tema seçin — değişiklik anında uygulanır ve tercihleriniz hatırlanır.</p>
+
+                    <div class="theme-grid" role="radiogroup" aria-label="Tema seçimi">
+
+                        <!-- Obsidian -->
+                        <div class="theme-card" data-theme-select="obsidian"
+                             role="radio" tabindex="0" aria-label="Obsidian teması">
+                            <div class="theme-card__check"><i class="bi bi-check-lg"></i></div>
+                            <div class="theme-card__preview" style="background: #0A0A0F;">
+                                <div class="theme-card__mockup-sidebar" style="background: #12121A;"></div>
+                                <div class="theme-card__mockup-content">
+                                    <div class="theme-card__mockup-bar" style="background: rgba(255,255,255,0.08);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(255,255,255,0.06);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(255,255,255,0.04);"></div>
+                                    <div class="theme-card__mockup-accent" style="background: #00D4FF;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-card__info">
+                                <div class="theme-card__icon" style="background: rgba(0,212,255,0.1); color: #00D4FF;">
+                                    <i class="bi bi-moon-stars-fill"></i>
+                                </div>
+                                <div class="theme-card__text">
+                                    <p class="theme-card__label">Obsidian</p>
+                                    <p class="theme-card__desc">Varsayılan koyu tema</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Midnight Blue -->
+                        <div class="theme-card" data-theme-select="midnight"
+                             role="radio" tabindex="0" aria-label="Midnight Blue teması">
+                            <div class="theme-card__check"><i class="bi bi-check-lg"></i></div>
+                            <div class="theme-card__preview" style="background: #0B1120;">
+                                <div class="theme-card__mockup-sidebar" style="background: #111B2E;"></div>
+                                <div class="theme-card__mockup-content">
+                                    <div class="theme-card__mockup-bar" style="background: rgba(59,130,246,0.12);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(59,130,246,0.09);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(59,130,246,0.06);"></div>
+                                    <div class="theme-card__mockup-accent" style="background: #3B82F6;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-card__info">
+                                <div class="theme-card__icon" style="background: rgba(59,130,246,0.1); color: #3B82F6;">
+                                    <i class="bi bi-cloud-moon-fill"></i>
+                                </div>
+                                <div class="theme-card__text">
+                                    <p class="theme-card__label">Midnight Blue</p>
+                                    <p class="theme-card__desc">Derin gece mavisi</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Aurora -->
+                        <div class="theme-card" data-theme-select="aurora"
+                             role="radio" tabindex="0" aria-label="Aurora teması">
+                            <div class="theme-card__check"><i class="bi bi-check-lg"></i></div>
+                            <div class="theme-card__preview" style="background: #0A1510;">
+                                <div class="theme-card__mockup-sidebar" style="background: #0F1F18;"></div>
+                                <div class="theme-card__mockup-content">
+                                    <div class="theme-card__mockup-bar" style="background: rgba(16,185,129,0.12);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(16,185,129,0.09);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(16,185,129,0.06);"></div>
+                                    <div class="theme-card__mockup-accent" style="background: #34D399;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-card__info">
+                                <div class="theme-card__icon" style="background: rgba(52,211,153,0.1); color: #34D399;">
+                                    <i class="bi bi-tree-fill"></i>
+                                </div>
+                                <div class="theme-card__text">
+                                    <p class="theme-card__label">Aurora</p>
+                                    <p class="theme-card__desc">Kuzey ışıkları orman yeşili</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Nebula -->
+                        <div class="theme-card" data-theme-select="nebula"
+                             role="radio" tabindex="0" aria-label="Nebula teması">
+                            <div class="theme-card__check"><i class="bi bi-check-lg"></i></div>
+                            <div class="theme-card__preview" style="background: #0F0A1A;">
+                                <div class="theme-card__mockup-sidebar" style="background: #16102A;"></div>
+                                <div class="theme-card__mockup-content">
+                                    <div class="theme-card__mockup-bar" style="background: rgba(139,92,246,0.12);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(139,92,246,0.09);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(139,92,246,0.06);"></div>
+                                    <div class="theme-card__mockup-accent" style="background: #A78BFA;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-card__info">
+                                <div class="theme-card__icon" style="background: rgba(167,139,250,0.1); color: #A78BFA;">
+                                    <i class="bi bi-stars"></i>
+                                </div>
+                                <div class="theme-card__text">
+                                    <p class="theme-card__label">Nebula</p>
+                                    <p class="theme-card__desc">Kozmik mor galaksi</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ember -->
+                        <div class="theme-card" data-theme-select="ember"
+                             role="radio" tabindex="0" aria-label="Ember teması">
+                            <div class="theme-card__check"><i class="bi bi-check-lg"></i></div>
+                            <div class="theme-card__preview" style="background: #150A0A;">
+                                <div class="theme-card__mockup-sidebar" style="background: #1F1010;"></div>
+                                <div class="theme-card__mockup-content">
+                                    <div class="theme-card__mockup-bar" style="background: rgba(239,68,68,0.12);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(239,68,68,0.09);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(239,68,68,0.06);"></div>
+                                    <div class="theme-card__mockup-accent" style="background: #F87171;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-card__info">
+                                <div class="theme-card__icon" style="background: rgba(248,113,113,0.1); color: #F87171;">
+                                    <i class="bi bi-fire"></i>
+                                </div>
+                                <div class="theme-card__text">
+                                    <p class="theme-card__label">Ember</p>
+                                    <p class="theme-card__desc">Volkanik kırmızı sıcaklık</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Arctic -->
+                        <div class="theme-card" data-theme-select="arctic"
+                             role="radio" tabindex="0" aria-label="Arctic teması">
+                            <div class="theme-card__check"><i class="bi bi-check-lg"></i></div>
+                            <div class="theme-card__preview" style="background: #0A1015;">
+                                <div class="theme-card__mockup-sidebar" style="background: #101820;"></div>
+                                <div class="theme-card__mockup-content">
+                                    <div class="theme-card__mockup-bar" style="background: rgba(103,232,249,0.12);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(103,232,249,0.09);"></div>
+                                    <div class="theme-card__mockup-bar" style="background: rgba(103,232,249,0.06);"></div>
+                                    <div class="theme-card__mockup-accent" style="background: #67E8F9;"></div>
+                                </div>
+                            </div>
+                            <div class="theme-card__info">
+                                <div class="theme-card__icon" style="background: rgba(103,232,249,0.1); color: #67E8F9;">
+                                    <i class="bi bi-snow2"></i>
+                                </div>
+                                <div class="theme-card__text">
+                                    <p class="theme-card__label">Arctic</p>
+                                    <p class="theme-card__desc">Buz mavisi soğuk tonlar</p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Bilgi Notu -->
+                <div class="setting-group" style="border-bottom: none;">
+                    <div class="d-flex align-items-start gap-3 p-3" style="background: rgba(99,102,241,0.06); border-radius: 12px; border: 1px solid rgba(99,102,241,0.12);">
+                        <i class="bi bi-info-circle fs-5" style="color: var(--accent-indigo); flex-shrink: 0; margin-top: 2px;"></i>
+                        <div>
+                            <p class="mb-1" style="font-weight: 500; color: var(--text-primary); font-size: 0.9rem;">Tema tercihiniz bu cihaza özeldir</p>
+                            <p class="mb-0" style="color: var(--text-muted); font-size: 0.8rem;">
+                                Seçtiğiniz tema tarayıcınızda saklanır ve farklı cihazlarda farklı temalar kullanabilirsiniz.
+                                Temalar arasında geçiş yapmak mevcut verilerinizi etkilemez.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
+

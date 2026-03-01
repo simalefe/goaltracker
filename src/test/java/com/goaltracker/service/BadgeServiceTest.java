@@ -119,7 +119,6 @@ class BadgeServiceTest {
             given(badgeRepository.findByConditionType("ACTIVE_GOALS")).willReturn(List.of(multiTaskerBadge));
             given(badgeRepository.findByConditionType("PACE_PCT")).willReturn(List.of(speedDemonBadge));
             given(goalEntryRepository.countByGoal_User_Id(userId)).willReturn(1L);
-            given(goalRepository.countByUserIdAndStatus(userId, GoalStatus.COMPLETED)).willReturn(0L);
             given(goalRepository.countByUserIdAndStatus(userId, GoalStatus.ACTIVE)).willReturn(1L);
             given(goalRepository.findById(goalId)).willReturn(Optional.empty());
 

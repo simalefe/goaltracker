@@ -6,76 +6,60 @@
     <title>Dashboard — GoalTracker Pro</title>
 </head>
 <body>
-    <layout:fragment name="content">
-        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+  <div layout:fragment="content">
+        <div class="page-header">
             <h1 class="h2">
-                <i class="bi bi-speedometer2 me-2"></i>Dashboard
+                <i class="bi bi-speedometer2 me-2" style="color: var(--accent-cyan);"></i>Dashboard
             </h1>
-            <small class="text-muted" th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy, EEEE')}">28 Şubat 2026, Cumartesi</small>
+            <small style="color: var(--text-muted);" th:text="${#temporals.format(#temporals.createNow(), 'dd MMMM yyyy, EEEE')}">01 Mart 2026, Pazar</small>
         </div>
 
-        <!-- Özet Kartları -->
+        <!-- Özet Metrik Kartları -->
         <div class="row g-4 mb-4">
-            <div class="col-sm-6 col-xl-3">
-                <div class="card text-bg-primary shadow-sm" role="status" th:aria-label="'Aktif Hedefler: ' + ${activeGoalCount}">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <span class="fs-1 me-3">🎯</span>
-                            <div>
-                                <h6 class="card-title mb-0">Aktif Hedefler</h6>
-                                <p class="card-text fs-3 fw-bold mb-0" th:text="${activeGoalCount}">0</p>
-                            </div>
-                        </div>
+            <div class="col-sm-6 col-xl-3 animate-fade-in stagger-1">
+                <div class="metric-card metric-cyan" role="status" th:aria-label="'Aktif Hedefler: ' + ${activeGoalCount}">
+                    <div class="metric-icon">
+                        <i class="bi bi-bullseye"></i>
                     </div>
+                    <div class="metric-value" th:text="${activeGoalCount}">0</div>
+                    <div class="metric-label">Aktif Hedefler</div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card text-bg-success shadow-sm" role="status" th:aria-label="'Bugün Giriş: ' + ${todayEntryCount}">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <span class="fs-1 me-3">✅</span>
-                            <div>
-                                <h6 class="card-title mb-0">Bugün Giriş</h6>
-                                <p class="card-text fs-3 fw-bold mb-0" th:text="${todayEntryCount}">0</p>
-                            </div>
-                        </div>
+            <div class="col-sm-6 col-xl-3 animate-fade-in stagger-2">
+                <div class="metric-card metric-emerald" role="status" th:aria-label="'Bugün Giriş: ' + ${todayEntryCount}">
+                    <div class="metric-icon">
+                        <i class="bi bi-check-circle"></i>
                     </div>
+                    <div class="metric-value" th:text="${todayEntryCount}">0</div>
+                    <div class="metric-label">Bugün Giriş</div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card text-bg-info shadow-sm" role="status" th:aria-label="'Yolunda: ' + ${goalsOnTrack}">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <span class="fs-1 me-3">📈</span>
-                            <div>
-                                <h6 class="card-title mb-0">Yolunda</h6>
-                                <p class="card-text fs-3 fw-bold mb-0" th:text="${goalsOnTrack}">0</p>
-                            </div>
-                        </div>
+            <div class="col-sm-6 col-xl-3 animate-fade-in stagger-3">
+                <div class="metric-card metric-indigo" role="status" th:aria-label="'Yolunda: ' + ${goalsOnTrack}">
+                    <div class="metric-icon">
+                        <i class="bi bi-graph-up-arrow"></i>
                     </div>
+                    <div class="metric-value" th:text="${goalsOnTrack}">0</div>
+                    <div class="metric-label">Yolunda</div>
                 </div>
             </div>
-            <div class="col-sm-6 col-xl-3">
-                <div class="card text-bg-warning shadow-sm" role="status" th:aria-label="'Geride: ' + ${goalsBehind}">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <span class="fs-1 me-3">📉</span>
-                            <div>
-                                <h6 class="card-title mb-0">Geride</h6>
-                                <p class="card-text fs-3 fw-bold mb-0" th:text="${goalsBehind}">0</p>
-                            </div>
-                        </div>
+            <div class="col-sm-6 col-xl-3 animate-fade-in stagger-4">
+                <div class="metric-card metric-amber" role="status" th:aria-label="'Geride: ' + ${goalsBehind}">
+                    <div class="metric-icon">
+                        <i class="bi bi-graph-down-arrow"></i>
                     </div>
+                    <div class="metric-value" th:text="${goalsBehind}">0</div>
+                    <div class="metric-label">Geride</div>
                 </div>
             </div>
         </div>
 
         <!-- Boş durum -->
-        <div th:if="${activeGoalCount == 0}" class="text-center py-5">
-            <i class="bi bi-bullseye text-muted" style="font-size: 4rem;"></i>
-            <h4 class="mt-3 text-muted">Henüz hedefin yok!</h4>
-            <p class="text-muted">İlk hedefini oluşturarak başla.</p>
-            <a th:href="@{/goals/new}" class="btn btn-primary btn-lg">
+        <div th:if="${activeGoalCount == 0}" class="empty-state animate-fade-in stagger-5">
+            <i class="bi bi-bullseye empty-icon"></i>
+            <h4>Henüz hedefin yok!</h4>
+            <p>İlk hedefini oluşturarak başla.</p>
+            <a th:href="@{/goals/new}" class="btn-gradient-pulse mt-3">
                 <i class="bi bi-plus-circle me-2"></i>Yeni Hedef Oluştur
             </a>
         </div>
@@ -84,54 +68,56 @@
         <div th:if="${activeGoalCount > 0}">
             <div class="row">
                 <!-- Sol: Top Hedefler -->
-                <div class="col-lg-8">
-                    <div class="card shadow-sm mb-4">
+                <div class="col-lg-8 animate-fade-in stagger-5">
+                    <div class="card mb-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0"><i class="bi bi-trophy me-2"></i>En İyi Hedefler</h6>
-                            <a th:href="@{/goals}" class="btn btn-sm btn-outline-primary">Tümünü Gör</a>
+                            <h6 class="mb-0"><i class="bi bi-trophy me-2" style="color: var(--accent-amber);"></i>En İyi Hedefler</h6>
+                            <a th:href="@{/goals}" class="btn btn-outline-primary btn-sm">Tümünü Gör</a>
                         </div>
                         <div class="card-body" th:if="${#lists.isEmpty(topGoals)}">
-                            <p class="text-muted mb-0 text-center py-3">Henüz hedef özeti yok.</p>
+                            <p class="mb-0 text-center py-3" style="color: var(--text-muted);">Henüz hedef özeti yok.</p>
                         </div>
-                        <div class="list-group list-group-flush" th:if="${!#lists.isEmpty(topGoals)}">
+                        <div th:if="${!#lists.isEmpty(topGoals)}">
                             <a th:each="goal : ${topGoals}"
                                th:href="@{/goals/{id}(id=${goal.goalId()})}"
-                               class="list-group-item list-group-item-action"
+                               class="goal-list-card"
                                th:aria-label="'Hedef: ' + ${goal.title()} + ', ' + ${goal.completionPct()} + '% tamamlandı'">
-                                <div class="d-flex align-items-center">
-                                    <!-- Color bar -->
-                                    <div class="me-3" th:if="${goal.color() != null}"
-                                         th:style="'width:6px; height:48px; border-radius:3px; background:' + ${goal.color()}"></div>
-                                    <div class="me-3" th:if="${goal.color() == null}"
-                                         style="width:6px; height:48px; border-radius:3px; background:#6B7280;"></div>
-                                    <!-- Content -->
-                                    <div class="flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                                <h6 class="mb-1" th:text="${goal.title()}">Hedef Adı</h6>
-                                                <small class="text-muted">
-                                                    <span th:if="${goal.category() != null}" class="badge bg-light text-dark me-1" th:text="${goal.category()}">Kategori</span>
+                                <!-- Color bar -->
+                                <div class="goal-color-bar" th:if="${goal.color() != null}"
+                                     th:style="'background:' + ${goal.color()}"></div>
+                                <div class="goal-color-bar" th:if="${goal.color() == null}"
+                                     style="background: var(--text-muted);"></div>
+                                <!-- Content -->
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="mb-1" th:text="${goal.title()}">Hedef Adı</h6>
+                                            <small style="color: var(--text-muted);">
+                                                <span th:if="${goal.category() != null}" class="badge badge-glass me-1" th:text="${goal.category()}">Kategori</span>
+                                                <span class="countdown-chip" th:classappend="${goal.daysLeft() < 7 ? 'urgent' : ''}">
+                                                    <i class="bi bi-clock me-1"></i>
                                                     <span th:text="${goal.daysLeft() + ' gün kaldı'}">0 gün kaldı</span>
-                                                </small>
-                                            </div>
-                                            <div class="text-end">
-                                                <div class="fw-bold" th:text="${goal.completionPct() + '%'}">0%</div>
-                                                <small th:classappend="${goal.gap().signum() >= 0 ? 'text-success' : 'text-danger'}">
-                                                    <span th:if="${goal.gap().signum() > 0}">+</span>
-                                                    <span th:text="${goal.gap()}">0</span>
-                                                    <span th:text="${goal.unit()}">birim</span>
-                                                </small>
-                                            </div>
+                                                </span>
+                                            </small>
                                         </div>
-                                        <!-- Mini progress bar -->
-                                        <div class="progress mt-2" style="height: 6px;">
-                                            <div class="progress-bar"
-                                                 th:classappend="${goal.completionPct().intValue() >= 100 ? 'bg-warning' : goal.trackingStatus() == 'BEHIND' ? 'bg-danger' : 'bg-success'}"
-                                                 role="progressbar"
-                                                 th:style="'width:' + ${goal.completionPct()} + '%'"
-                                                 th:attr="aria-valuenow=${goal.completionPct()}"
-                                                 aria-valuemin="0" aria-valuemax="100">
-                                            </div>
+                                        <div class="text-end">
+                                            <div class="mono fw-bold" th:text="${goal.completionPct() + '%'}">0%</div>
+                                            <small th:classappend="${goal.gap().signum() >= 0 ? 'text-success' : 'text-danger'}">
+                                                <span th:if="${goal.gap().signum() > 0}">+</span>
+                                                <span th:text="${goal.gap()}">0</span>
+                                                <span th:text="${goal.unit()}">birim</span>
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <!-- Animated progress bar -->
+                                    <div class="progress mt-2" style="height: 6px;">
+                                        <div class="progress-bar"
+                                             th:classappend="${goal.completionPct().intValue() >= 100 ? 'progress-bar-amber' : goal.trackingStatus() == 'BEHIND' ? 'progress-bar-red' : 'progress-bar-emerald'}"
+                                             role="progressbar"
+                                             th:style="'width:' + ${goal.completionPct()} + '%'"
+                                             th:attr="aria-valuenow=${goal.completionPct()}"
+                                             aria-valuemin="0" aria-valuemax="100"
+                                             data-animate>
                                         </div>
                                     </div>
                                 </div>
@@ -140,62 +126,60 @@
                     </div>
 
                     <!-- Streak'ler -->
-                    <div class="card shadow-sm mb-4">
+                    <div class="card mb-4 animate-fade-in stagger-6">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            <h6 class="mb-0"><i class="bi bi-fire me-2"></i>Streak'ler</h6>
-                            <span class="badge bg-danger" th:text="${totalStreakDays} + ' gün toplam'">0 gün toplam</span>
+                            <h6 class="mb-0"><i class="bi bi-fire me-2" style="color: var(--accent-red);"></i>Streak'ler</h6>
+                            <span class="badge badge-red" th:text="${totalStreakDays} + ' gün toplam'">0 gün toplam</span>
                         </div>
                         <div class="card-body text-center py-4" th:if="${#lists.isEmpty(streaks)}">
-                            <i class="bi bi-fire text-muted" style="font-size: 2rem;"></i>
-                            <p class="text-muted mt-2 mb-0">Henüz aktif streak yok. Günlük kayıt girerek streak başlat!</p>
+                            <i class="bi bi-fire" style="font-size: 2rem; color: var(--text-muted);"></i>
+                            <p class="mt-2 mb-0" style="color: var(--text-muted);">Henüz aktif streak yok. Günlük kayıt girerek streak başlat!</p>
                         </div>
-                        <div class="list-group list-group-flush" th:if="${!#lists.isEmpty(streaks)}">
-                            <div th:each="streak : ${streaks}" class="list-group-item">
-                                <div class="d-flex justify-content-between align-items-center">
+                        <div class="card-body" th:if="${!#lists.isEmpty(streaks)}">
+                            <div class="streak-scroll">
+                                <div th:each="streak : ${streaks}" class="streak-item">
+                                    <span style="font-size: 1.5rem;">🔥</span>
                                     <div>
-                                        <span class="text-danger me-1">🔥</span>
-                                        <span class="fw-bold" th:text="${streak.currentStreak()} + ' gün'">0 gün</span>
+                                        <div class="mono fw-bold" style="color: var(--accent-red);" th:text="${streak.currentStreak()} + ' gün'">0 gün</div>
+                                        <small style="color: var(--text-muted);">En uzun: <span class="mono" th:text="${streak.longestStreak()}">0</span> gün</small>
                                     </div>
-                                    <small class="text-muted">
-                                        En uzun: <span th:text="${streak.longestStreak()}">0</span> gün
-                                    </small>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Sağ: Son Aktiviteler -->
+                <!-- Sağ: Son Aktiviteler + Genel Durum -->
                 <div class="col-lg-4">
-                    <div class="card shadow-sm mb-4">
+                    <div class="card mb-4 animate-fade-in stagger-6">
                         <div class="card-header">
-                            <h6 class="mb-0"><i class="bi bi-clock-history me-2"></i>Son Aktiviteler</h6>
+                            <h6 class="mb-0"><i class="bi bi-clock-history me-2" style="color: var(--accent-indigo);"></i>Son Aktiviteler</h6>
                         </div>
                         <div class="card-body" th:if="${#lists.isEmpty(recentEntries)}">
-                            <p class="text-muted mb-0 text-center py-3">Henüz ilerleme kaydı yok.</p>
+                            <p class="mb-0 text-center py-3" style="color: var(--text-muted);">Henüz ilerleme kaydı yok.</p>
                         </div>
-                        <div class="list-group list-group-flush" th:if="${!#lists.isEmpty(recentEntries)}">
-                            <a th:each="entry : ${recentEntries}"
-                               th:href="@{/goals/{id}(id=${entry.goalId()})}"
-                               class="list-group-item list-group-item-action">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <div>
+                        <div th:if="${!#lists.isEmpty(recentEntries)}" class="card-body p-0">
+                            <div class="timeline" style="padding: 1rem 1.25rem 0.5rem 2.5rem;">
+                                <a th:each="entry : ${recentEntries}"
+                                   th:href="@{/goals/{id}(id=${entry.goalId()})}"
+                                   class="timeline-item">
+                                    <div class="flex-grow-1">
                                         <h6 class="mb-0 small" th:text="${entry.goalTitle()}">Hedef</h6>
-                                        <small class="text-muted" th:text="${entry.entryDate()}">2026-02-28</small>
+                                        <small style="color: var(--text-muted);" th:text="${entry.entryDate()}">2026-03-01</small>
                                     </div>
                                     <div class="text-end">
-                                        <span class="fw-bold" th:text="${entry.actualValue()}">0</span>
-                                        <small class="text-muted" th:text="${entry.unit()}">birim</small>
+                                        <span class="mono fw-bold" th:text="${entry.actualValue()}">0</span>
+                                        <small style="color: var(--text-muted);" th:text="${entry.unit()}">birim</small>
                                     </div>
-                                </div>
-                            </a>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Dashboard Doughnut Overview -->
-                    <div class="card shadow-sm mb-4">
+                    <div class="card mb-4 animate-fade-in stagger-7">
                         <div class="card-header">
-                            <h6 class="mb-0"><i class="bi bi-pie-chart me-2"></i>Genel Durum</h6>
+                            <h6 class="mb-0"><i class="bi bi-pie-chart me-2" style="color: var(--accent-emerald);"></i>Genel Durum</h6>
                         </div>
                         <div class="card-body text-center">
                             <canvas id="dashboardOverviewChart" style="max-height: 220px;"
@@ -203,20 +187,20 @@
                                     th:data-on-track="${goalsOnTrack}"
                                     th:data-behind="${goalsBehind}"></canvas>
                             <div class="mt-3 d-flex justify-content-center gap-4 small">
-                                <span><i class="bi bi-circle-fill text-success me-1"></i>Yolunda</span>
-                                <span><i class="bi bi-circle-fill text-danger me-1"></i>Geride</span>
+                                <span><i class="bi bi-circle-fill me-1" style="color: var(--accent-emerald);"></i>Yolunda</span>
+                                <span><i class="bi bi-circle-fill me-1" style="color: var(--accent-red);"></i>Geride</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </layout:fragment>
+    </div>
 
-    <layout:fragment name="scripts">
-        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-        <script th:src="@{/js/charts.js}"></script>
-    </layout:fragment>
+    <th:block layout:fragment="scripts">
+      <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+      <script th:src="@{/js/charts.js}"></script>
+    </th:block>
 </body>
 </html>
 

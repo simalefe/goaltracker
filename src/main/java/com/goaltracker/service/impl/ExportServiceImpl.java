@@ -34,8 +34,13 @@ import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.IndexedColors;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +133,7 @@ public class ExportServiceImpl implements ExportService {
 
         // Row 1: Title
         Row titleRow = sheet.createRow(rowIdx++);
-        Cell titleCell = titleRow.createCell(0);
+        org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue(goal.getTitle());
         titleCell.setCellStyle(titleStyle);
 
@@ -150,11 +155,11 @@ public class ExportServiceImpl implements ExportService {
 
         for (String[] pair : data) {
             Row row = sheet.createRow(rowIdx++);
-            Cell labelCell = row.createCell(0);
+            org.apache.poi.ss.usermodel.Cell labelCell = row.createCell(0);
             labelCell.setCellValue(pair[0]);
             labelCell.setCellStyle(headerStyle);
 
-            Cell valueCell = row.createCell(1);
+            org.apache.poi.ss.usermodel.Cell valueCell = row.createCell(1);
             valueCell.setCellValue(pair[1]);
 
             // Conditional coloring for gap
@@ -168,7 +173,7 @@ public class ExportServiceImpl implements ExportService {
         }
 
         // Auto-size columns
-        sheet.trackAllColumnsForAutoSizing();
+        ((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
         for (int i = 0; i < 2; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -179,7 +184,7 @@ public class ExportServiceImpl implements ExportService {
         Row headerRow = sheet.createRow(0);
         String[] headers = {"Tarih", "Değer", "Birim", "Not"};
         for (int i = 0; i < headers.length; i++) {
-            Cell cell = headerRow.createCell(i);
+            org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
             cell.setCellValue(headers[i]);
             cell.setCellStyle(headerStyle);
         }
@@ -195,7 +200,7 @@ public class ExportServiceImpl implements ExportService {
         }
 
         // Auto-size columns
-        sheet.trackAllColumnsForAutoSizing();
+        ((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
         for (int i = 0; i < headers.length; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -230,10 +235,10 @@ public class ExportServiceImpl implements ExportService {
 
         // Header
         Row headerRow = sheet.createRow(0);
-        Cell h1 = headerRow.createCell(0);
+        org.apache.poi.ss.usermodel.Cell h1 = headerRow.createCell(0);
         h1.setCellValue("İstatistik");
         h1.setCellStyle(headerStyle);
-        Cell h2 = headerRow.createCell(1);
+        org.apache.poi.ss.usermodel.Cell h2 = headerRow.createCell(1);
         h2.setCellValue("Değer");
         h2.setCellStyle(headerStyle);
 
@@ -255,7 +260,7 @@ public class ExportServiceImpl implements ExportService {
             row.createCell(1).setCellValue(pair[1]);
         }
 
-        sheet.trackAllColumnsForAutoSizing();
+        ((SXSSFSheet) sheet).trackAllColumnsForAutoSizing();
         for (int i = 0; i < 2; i++) {
             sheet.autoSizeColumn(i);
         }
@@ -601,7 +606,15 @@ public class ExportServiceImpl implements ExportService {
     @Override
     public String normalizeFilename(String title) {
         if (title == null || title.isBlank()) return "export";
-        String safe = Normalizer.normalize(title, Normalizer.Form.NFD)
+        // Map Turkish characters that don't decompose via NFD
+        String mapped = title
+                .replace('ı', 'i').replace('İ', 'I')
+                .replace('ş', 's').replace('Ş', 'S')
+                .replace('ğ', 'g').replace('Ğ', 'G')
+                .replace('ç', 'c').replace('Ç', 'C')
+                .replace('ö', 'o').replace('Ö', 'O')
+                .replace('ü', 'u').replace('Ü', 'U');
+        String safe = Normalizer.normalize(mapped, Normalizer.Form.NFD)
                 .replaceAll("[^\\p{ASCII}]", "")
                 .replaceAll("[^a-zA-Z0-9\\-]", "-")
                 .toLowerCase()

@@ -9,24 +9,24 @@
  *  - ActivityHeatmap (CSS Grid)
  */
 
-/* ========== Renk Sabitleri ========== */
+/* ========== Renk Sabitleri (Dark Theme) ========== */
 const COLORS = {
-    planned:  '#3B82F6',   // blue-500
-    actual:   '#10B981',   // emerald-500
-    behind:   '#EF4444',   // red-500
-    ahead:    '#10B981',   // emerald-500
-    onTrack:  '#3B82F6',   // blue-500
-    streak:   '#F59E0B',   // amber-500
-    neutral:  '#6B7280',   // gray-500
-    gold:     '#F59E0B',   // amber-500
+    planned:  '#6366F1',   // indigo — accent-indigo
+    actual:   '#10B981',   // emerald — accent-emerald
+    behind:   '#EF4444',   // red — accent-red
+    ahead:    '#10B981',   // emerald
+    onTrack:  '#00D4FF',   // cyan — accent-cyan
+    streak:   '#F59E0B',   // amber — accent-amber
+    neutral:  '#475569',   // text-muted
+    gold:     '#F59E0B',   // amber
 };
 
 const HEATMAP_COLORS = {
-    empty:    '#E5E7EB',   // gray-200 (light mode)
-    level1:   '#bbf7d0',   // green-200
-    level2:   '#4ade80',   // green-400
-    level3:   '#16a34a',   // green-600
-    level4:   '#15803d',   // green-700
+    empty:    '#1E293B',   // slate-800 (dark mode)
+    level1:   '#064E3B',   // emerald-900
+    level2:   '#059669',   // emerald-600
+    level3:   '#10B981',   // emerald-500
+    level4:   '#34D399',   // emerald-400
 };
 
 /* ========== Yardımcı Fonksiyonlar ========== */
@@ -85,7 +85,7 @@ function initDashboardOverviewChart() {
 
     var total = onTrack + behind;
     var data = total > 0 ? [onTrack, behind] : [1];
-    var bgColors = total > 0 ? [COLORS.actual, COLORS.behind] : ['#E5E7EB'];
+    var bgColors = total > 0 ? [COLORS.actual, COLORS.behind] : ['#1E293B'];
     var labels = total > 0 ? ['Yolunda', 'Geride'] : ['Hedef yok'];
 
     new Chart(canvas, {
@@ -96,7 +96,7 @@ function initDashboardOverviewChart() {
                 data: data,
                 backgroundColor: bgColors,
                 borderWidth: 2,
-                borderColor: '#ffffff'
+                borderColor: '#0A0A0F'
             }]
         },
         options: {
@@ -122,19 +122,19 @@ function initDashboardOverviewChart() {
                 var width = chart.width;
                 var height = chart.height;
                 ctx.save();
-                ctx.font = 'bold 24px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                ctx.fillStyle = '#1F2937';
+                ctx.font = 'bold 24px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#F8FAFC';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 if (total > 0) {
                     var pct = Math.round((onTrack / total) * 100);
                     ctx.fillText(pct + '%', width / 2, height / 2 - 8);
-                    ctx.font = '12px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                    ctx.fillStyle = '#6B7280';
+                    ctx.font = '12px "DM Sans", sans-serif';
+                    ctx.fillStyle = '#94A3B8';
                     ctx.fillText('Yolunda', width / 2, height / 2 + 14);
                 } else {
-                    ctx.font = '14px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                    ctx.fillStyle = '#6B7280';
+                    ctx.font = '14px "DM Sans", sans-serif';
+                    ctx.fillStyle = '#475569';
                     ctx.fillText('—', width / 2, height / 2);
                 }
                 ctx.restore();
@@ -400,7 +400,7 @@ function initCompletionDonut() {
             labels: ['Tamamlanan', 'Kalan'],
             datasets: [{
                 data: [pct, remaining],
-                backgroundColor: [donutColor, '#E5E7EB'],
+                backgroundColor: [donutColor, '#1E293B'],
                 borderWidth: 0
             }]
         },
@@ -426,8 +426,8 @@ function initCompletionDonut() {
                 var width = chart.width;
                 var height = chart.height;
                 ctx.save();
-                ctx.font = 'bold 20px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif';
-                ctx.fillStyle = '#1F2937';
+                ctx.font = 'bold 20px "JetBrains Mono", monospace';
+                ctx.fillStyle = '#F8FAFC';
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
                 ctx.fillText(pct.toFixed(1) + '%', width / 2, height / 2);
@@ -487,7 +487,7 @@ function initActivityHeatmap() {
         // Day labels (column 0)
         var dayLabels = ['Pzt', '', 'Çrş', '', 'Cmt', '', 'Paz'];
         for (var d = 0; d < 7; d++) {
-            html += '<div style="grid-column:1; grid-row:' + (d + 1) + '; display:flex; align-items:center; color:#6B7280;">' + dayLabels[d] + '</div>';
+            html += '<div style="grid-column:1; grid-row:' + (d + 1) + '; display:flex; align-items:center; color:#94A3B8;">' + dayLabels[d] + '</div>';
         }
 
         // Cells

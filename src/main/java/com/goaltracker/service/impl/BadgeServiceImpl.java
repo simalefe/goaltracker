@@ -105,8 +105,9 @@ public class BadgeServiceImpl implements BadgeService {
     }
 
     private void checkCompletionBadges(Long userId) {
-        long completedGoals = goalRepository.countByUserIdAndStatus(userId, GoalStatus.COMPLETED);
         List<Badge> completionBadges = badgeRepository.findByConditionType("COMPLETIONS");
+        if (completionBadges.isEmpty()) return;
+        long completedGoals = goalRepository.countByUserIdAndStatus(userId, GoalStatus.COMPLETED);
         for (Badge badge : completionBadges) {
             if (completedGoals >= badge.getConditionValue()) {
                 awardBadge(userId, badge);
@@ -115,8 +116,9 @@ public class BadgeServiceImpl implements BadgeService {
     }
 
     private void checkActiveGoalsBadges(Long userId) {
-        long activeGoals = goalRepository.countByUserIdAndStatus(userId, GoalStatus.ACTIVE);
         List<Badge> activeGoalBadges = badgeRepository.findByConditionType("ACTIVE_GOALS");
+        if (activeGoalBadges.isEmpty()) return;
+        long activeGoals = goalRepository.countByUserIdAndStatus(userId, GoalStatus.ACTIVE);
         for (Badge badge : activeGoalBadges) {
             if (activeGoals >= badge.getConditionValue()) {
                 awardBadge(userId, badge);
@@ -125,6 +127,9 @@ public class BadgeServiceImpl implements BadgeService {
     }
 
     private void checkPaceBadges(Long userId, Long goalId) {
+        List<Badge> paceBadges = badgeRepository.findByConditionType("PACE_PCT");
+        if (paceBadges.isEmpty()) return;
+
         Goal goal = goalRepository.findById(goalId).orElse(null);
         if (goal == null) return;
 
@@ -137,7 +142,6 @@ public class BadgeServiceImpl implements BadgeService {
                 .divide(plannedProgress, 4, RoundingMode.HALF_UP)
                 .multiply(BigDecimal.valueOf(100));
 
-        List<Badge> paceBadges = badgeRepository.findByConditionType("PACE_PCT");
         for (Badge badge : paceBadges) {
             if (pace.compareTo(BigDecimal.valueOf(badge.getConditionValue())) >= 0) {
                 awardBadge(userId, badge);

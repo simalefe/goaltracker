@@ -7,6 +7,7 @@ public enum NotificationType {
     BADGE_EARNED,
     GOAL_COMPLETED,
     WEEKLY_SUMMARY,
-    FRIEND_ACTIVITY
+    FRIEND_ACTIVITY,
+    FRIEND_REQUEST
 }
 

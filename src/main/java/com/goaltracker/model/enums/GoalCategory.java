@@ -5,6 +5,12 @@ public enum GoalCategory {
     HEALTH,
     FITNESS,
     FINANCE,
-    PERSONAL
+    PERSONAL,
+    LEARNING,
+    WELLNESS,
+    CAREER,
+    HOBBY,
+    HOME,
+    FAMILY
 }
 

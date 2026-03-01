@@ -25,7 +25,7 @@ public interface StreakRepository extends JpaRepository<Streak, Long> {
             @Param("date") LocalDate date);
 
     @Modifying
-    @Query("UPDATE Streak s SET s.currentStreak = 0, s.updatedAt = CURRENT_TIMESTAMP " +
+    @Query("UPDATE Streak s SET s.currentStreak = 0, s.updatedAt = CURRENT_INSTANT " +
             "WHERE s.goal.status = :status AND s.lastEntryDate IS NOT NULL AND s.lastEntryDate < :date")
     int resetStaleStreaks(@Param("status") GoalStatus status, @Param("date") LocalDate date);
 }

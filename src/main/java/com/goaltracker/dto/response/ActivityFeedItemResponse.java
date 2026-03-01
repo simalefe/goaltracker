@@ -1,7 +1,11 @@
 package com.goaltracker.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.Instant;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public class ActivityFeedItemResponse {
     private String type;
@@ -45,5 +49,15 @@ public class ActivityFeedItemResponse {
 
     public Instant getTimestamp() { return timestamp; }
     public void setTimestamp(Instant timestamp) { this.timestamp = timestamp; }
+
+    @JsonIgnore
+    public String getFormattedTimestamp() {
+        if (timestamp == null) {
+            return "";
+        }
+        return DateTimeFormatter.ofPattern("dd MMM HH:mm", Locale.of("tr"))
+                .withZone(ZoneId.systemDefault())
+                .format(timestamp);
+    }
 }
 

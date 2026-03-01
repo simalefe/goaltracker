@@ -3,6 +3,34 @@
  * Bootstrap modal tetikleme, form submit yardımcıları
  */
 
+// ─── Frontend Hata Loglama ───────────────────────────────────────────────────
+// Yakalanmayan JS hataları sunucu console'una iletilir (yalnızca dev'de anlamlı)
+function sendClientError(payload) {
+    try {
+        var body = JSON.stringify(Object.assign({ url: window.location.pathname }, payload));
+        var blob = new Blob([body], { type: 'application/json' });
+        navigator.sendBeacon('/api/client-error', blob);
+    } catch (_) { /* sessiz kal — loglama hatası uygulamayı bozmasın */ }
+}
+
+window.onerror = function (message, source, line, col, error) {
+    sendClientError({
+        message: message,
+        source:  source,
+        line:    line,
+        col:     col,
+        stack:   error ? error.stack : ''
+    });
+};
+
+window.addEventListener('unhandledrejection', function (event) {
+    sendClientError({
+        message: 'Unhandled Promise Rejection: ' + (event.reason ? event.reason.toString() : 'unknown'),
+        stack:   event.reason && event.reason.stack ? event.reason.stack : ''
+    });
+});
+// ────────────────────────────────────────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', function () {
 
     // Flash mesajlarını 5 saniye sonra otomatik kapat
